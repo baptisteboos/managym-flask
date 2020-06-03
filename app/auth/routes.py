@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import render_template, flash, redirect, url_for, request
 from flask_babel import _
 from flask_login import current_user, login_user, logout_user
@@ -19,7 +21,7 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user is None or not user.check_password(form.password.data):
-            flash(_('Invalid username or passwrod'))
+            flash(_('Invalid username or password'))
             return redirect(url_for('auth.login'))
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
@@ -41,7 +43,8 @@ def register():
         return redirect(url_for('main.index'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data)
+        user = User(username=form.username.data, first_name=form.first_name.data.capitalize(), \
+                    last_name=form.last_name.data.capitalize(), email=form.email.data)
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
