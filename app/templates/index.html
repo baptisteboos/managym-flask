@@ -14,16 +14,19 @@
       </thead>
       <tbody>
       {% for athlete in athletes %}
-        <tr>
-          <th scope="row">{{ athlete.id }}</th>
-          <td>{{ athlete.first_name }}</td>
-          <td>{{ athlete.last_name }}</td>
-        </tr>
+          <tr>
+            <th scope="row">{{ athlete.id }}</th>
+            <td>{{ athlete.first_name }}</td>
+            <td>{{ athlete.last_name }}</td>
+            <td>
+              <a href="{{ url_for('main.athlete', id=athlete.id) }}"><span class="glyphicon glyphicon-user"></span> {{ _('Profile') }}</a>
+            </td>
+          </tr>
       {% endfor %}
       </tbody>
     </table>
     {% endif %}
     <br>
-  <p>To register a new athlete, click <a href="{{ url_for('main.register_player') }}">here</a></p>
+  <p>To register a new athlete, click <a href="{{ url_for('main.register_athlete') }}">here</a></p>
   </div>
 {% endblock %}
