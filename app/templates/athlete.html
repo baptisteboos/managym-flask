@@ -3,12 +3,12 @@
 {% block app_content %}
 	<table class="table table-hover">
 		<tr>
-			<td width="256px">
-				<img src="" alt="">
+			<td width="192px">
+				<img src="{{ athlete.picture(128) }}">
 			</td>
 			<td>
 				<h1>{{ athlete.first_name + ' ' + athlete.last_name }}</h1>
-				<p>{{ _('Date of birth: ') + athlete.date_birth.strftime('%x') }}</p>
+				<p>{{ _('Date of birth: ') + athlete.birth_date.strftime('%x') }}</p>
 				{% if athlete.email %}<p>{{ athlete.email }}</p>{% endif %}
 				<p>{{ _('Group: ') }}<b>{{ athlete.group.name }}</b></p>
 			</td>

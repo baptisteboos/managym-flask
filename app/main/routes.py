@@ -18,11 +18,11 @@ def index():
 @login_required
 def register_athlete():
     form = RegistrationAthleteForm()
-    form.group_id.choices = [(g.id, g.name) for g in Group.query.order_by('name')]
+    form.set_choices()
     if form.validate_on_submit():
         athlete = Athlete(first_name=form.first_name.data.capitalize(), \
                           last_name=form.last_name.data.capitalize(), \
-                          email=form.email.data, gender=form.gender.data, date_birth=form.date_birth.data)
+                          email=form.email.data, gender=form.gender.data, birth_date=form.birth_date.data)
         db.session.add(athlete)
         db.session.commit()
         flash(_('Succesfully athlete added'))

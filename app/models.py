@@ -1,10 +1,13 @@
 import os
 import base64
-import jwt
+from hashlib import md5
 from time import time
 
-from werkzeug.security import generate_password_hash, check_password_hash
+
+import jwt
+from flask import current_app
 from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db, login
 
@@ -59,6 +62,36 @@ def load_user(id):
   return User.query.get(int(id))
 
 
+class TargetResults(db.Model):
+    __tablename__ = 'target_results'
+    id = db.Column(db.Integer, 
+                   primary_key=True)
+    athlete_id = db.Column(db.Integer, 
+                           db.ForeignKey('athlete.id'),
+                           nullable=False)
+    apparel_id = db.Column(db.Integer, 
+                           db.ForeignKey('apparel.id'),
+                           nullable=False)
+    event_id = db.Column(db.Integer,
+                         db.ForeignKey('event.id'),
+                         nullable=False)
+    
+    __table_args__ = (db.UniqueConstraint(athlete_id, apparel_id, event_id),)
+
+    target_sv = db.Column(db.Float,
+                          nullable=True)
+    target_ex = db.Column(db.Float,
+                          nullable=True)
+    result_sv = db.Column(db.Float,
+                          nullable=True)
+    result_ex = db.Column(db.Float,
+                          nullable=True)
+    # Simple relation don't need a backref for the moment
+    apparel = db.relationship('Apparel')
+
+    def __repr__(self):
+        return f'<TargetResults: {self.athlete_id}, {self.apparel_id}, {self.event_id}'
+
 class Group(db.Model):
     id = db.Column(db.Integer,
                    primary_key=True)
@@ -89,15 +122,24 @@ class Athlete(db.Model):
                       nullable=True)
     gender = db.Column(db.String(1), # 0=Not known, 1=male, 2=female, 9=Not applicable (ISO 5218)
                        nullable=False)
-    date_birth = db.Column(db.DateTime, 
+    birth_date = db.Column(db.DateTime, 
                            index=False,
                            unique=False,
                            nullable=False)
     group_id = db.Column(db.Integer,
-                         db.ForeignKey('group.id'))
+                         db.ForeignKey('group.id'),
+                         nullable=True)
+    # target_results return a query with lazy='dynamic', can apply additional SQL filters
+    # /!\ the reverse 'TargetResults.athlete' return an object Athlete
+    target_results = db.relationship('TargetResults', backref='athlete', lazy='dynamic')
 
     def __repr__(self):
         return f'<Athlete {self.first_name} {self.last_name}>'
+
+    def picture(self, size):
+        email = self.email or 'email@test.com'
+        digest = md5(self.email.lower().encode('utf-8')).hexdigest()
+        return f'https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}'
 
 class Event(db.Model):
     id = db.Column(db.Integer, 
@@ -121,6 +163,9 @@ class Event(db.Model):
                       index=False,
                       unique=False,
                       nullable=False)
+    # target_results return a query with lazy='dynamic', can apply additional SQL filters
+    # /!\ the reverse 'TargetResults.event' return an object Event
+    target_results = db.relationship('TargetResults', backref='event', lazy='dynamic')
 
     def __repr__(self):
         return f'<Event {self.name}>'
