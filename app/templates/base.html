@@ -41,4 +41,12 @@
     {{ super() }}
     {{ moment.include_moment() }}
     {{ moment.lang(g.locale) }}
+    // <script>
+    // function valid(evt) {
+    //   var ASCIICode = (evt.which) ? evt.which : evt.keyCode;
+    //   if (ASCIICode > 31 && (ASCIICode < 48 || ASCIICode > 57)) 
+    //     return false; 
+    //   return true; 
+    // }
+    // </script>
 {% endblock %}

@@ -21,20 +21,35 @@
 		</thead>
 		<tbody>
 			{% for (app, score) in athlete.target_results_from_event(1).items() %}
-			<tr>
+			<tr id="apparel-{{ score.apparel.id }}">
 				<th class="active">{{ app }}</th>
-				<td contenteditable="True">{{ score.target_sv }}</td>
-				<td contenteditable="True">{{ score.target_ex }}</td>
-				<td class="active">{{ score.target_total }}</td>
-				<td contenteditable="True">{{ score.result_sv }}</td>
-				<td class="active">{{ score.target_result_sv }} %</td>
-				<td contenteditable="True">{{ score.result_ex }}</td>
-				<td class="active">{{ score.target_result_ex }} %</td>
-				<td class="active">{{ score.result_total }}</td>
-				<td class="active">{{ score.target_result_total }} %</td>
+				<td id="tsv-{{ score.apparel.id }}" contenteditable="True" oninput="calculate(this);">{{ score.target_sv }}</td>
+				<td id="tex-{{ score.apparel.id }}" contenteditable="True" oninput="calculate(this);">{{ score.target_ex }}</td>
+				<td id="ttot-{{ score.apparel.id }}" class="active">{{ score.target_total }}</td>
+				<td id="rsv-{{ score.apparel.id }}" contenteditable="True" oninput="calculate(this);">{{ score.result_sv }}</td>
+				<td id="trsv-{{ score.apparel.id }}" class="active">{{ score.target_result_sv }}</td>
+				<td id="rex-{{ score.apparel.id }}" contenteditable="True" oninput="calculate(this);">{{ score.result_ex }}</td>
+				<td id="trex-{{ score.apparel.id }}" class="active">{{ score.target_result_ex }}</td>
+				<td id="rtot-{{ score.apparel.id }}" class="active">{{ score.result_total }}</td>
+				<td id="trtot-{{ score.apparel.id }}" class="active">{{ score.target_result_total }}</td>
 			</tr>
 			{% endfor %}
 		</tbody>
 	</table>
 </div>
-</table>
+<script>
+function calculate(elem) {
+  var id = elem.id.charAt(elem.id.length-1);
+  var score = {"tsv": parseFloat(document.getElementById('tsv-' + id).innerText),
+  			   		 "tex": parseFloat(document.getElementById('tex-' + id).innerText),
+  			   		 "rsv": parseFloat(document.getElementById('rsv-' + id).innerText),
+  			   		 "rex": parseFloat(document.getElementById('rex-' + id).innerText)}
+  // console.log(score)
+  $('#ttot-' + id).text(String((score['tsv'] + score['tex']).toFixed(2)))
+  $('#trsv-' + id).text(String((score['rsv'] / score['tsv'] * 100).toFixed(2)))
+  $('#trex-' + id).text(String((score['rex'] / score['tex'] * 100).toFixed(2)))
+  $('#rtot-' + id).text(String((score['rsv'] + score['rex']).toFixed(2)))
+  $('#trtot-' + id).text(String(((score['rsv'] + score['rex']) / 
+  															 (score['tsv'] + score['tex']) * 100).toFixed(2)))
+}
+</script>
