@@ -3,7 +3,6 @@ import base64
 from hashlib import md5
 from time import time
 
-
 import jwt
 from flask import current_app
 from flask_login import UserMixin
@@ -92,6 +91,26 @@ class TargetResults(db.Model):
     def __repr__(self):
         return f'<TargetResults: {self.athlete_id}, {self.apparel_id}, {self.event_id}'
 
+    @property
+    def target_total(self):
+        return round(self.target_sv + self.target_ex, 2)
+
+    @property
+    def result_total(self):
+        return round(self.result_sv + self.result_ex, 2)
+
+    @property
+    def target_result_sv(self):
+        return round(self.result_sv / self.target_sv * 100, 2)
+
+    @property
+    def target_result_ex(self):
+        return round(self.result_ex / self.target_ex * 100, 2)
+
+    @property
+    def target_result_total(self):
+        return round((self.result_sv + self.result_ex) / (self.target_sv + self.target_ex) * 100, 2)
+
 class Group(db.Model):
     id = db.Column(db.Integer,
                    primary_key=True)
@@ -138,8 +157,23 @@ class Athlete(db.Model):
 
     def picture(self, size):
         email = self.email or 'email@test.com'
-        digest = md5(self.email.lower().encode('utf-8')).hexdigest()
+        digest = md5(email.lower().encode('utf-8')).hexdigest()
         return f'https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}'
+
+    def target_results_from_event(self, event_id):
+        id = Event.query.get(event_id)
+        if not id:
+            return
+        target_results = self.target_results.filter_by(event_id=event_id).all()
+        if target_results and self.gender == '1':
+            score = {'FX': None, 'PH': None, 'SR': None, 'VT': None, 'PB': None, 'HB': None}
+            for result in target_results:
+                score[result.apparel.short_name.upper()] = result
+        # elif not target_results and self.gender ==  '2':
+        #     target_results = {'VT': [], 'UB': [], 'BB': [], 'FX': []}
+        else: 
+            return  
+        return score
 
 class Event(db.Model):
     id = db.Column(db.Integer, 
@@ -186,4 +220,13 @@ class Apparel(db.Model):
     def __repr__(self):
         return f'<Name {self.name}>'
 
+class TargetScore():
+    def __init__(self, target_sv, target_ex, result_sv, result_ex):
+        self.target_sv = target_sv
+        self.target_ex = target_ex
+        self.result_sv = result_sv
+        self.result_ex = result_ex
 
+    @staticmethod
+    def target_total(self):
+        return self.target_sv + self.target_ex

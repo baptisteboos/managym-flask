@@ -1,11 +1,17 @@
-from flask import render_template, url_for, redirect, flash
+from flask import render_template, url_for, redirect, flash, g
 from flask_login import current_user, login_required
-from flask_babel import _
+from flask_babel import _, get_locale
 
 from app import db
 from app.main import bp
 from app.models import Athlete, Group
 from app.main.forms import RegistrationAthleteForm
+
+
+@bp.before_app_request
+def before_request():
+    g.locale = str(get_locale())
+
 
 @bp.route('/')
 @bp.route('/index')
@@ -34,4 +40,5 @@ def register_athlete():
 @login_required
 def athlete(id):
     athlete = Athlete.query.get_or_404(id)
+    # import pdb; pdb.set_trace()
     return render_template('athlete.html', athlete=athlete)

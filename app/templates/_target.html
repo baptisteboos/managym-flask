@@ -1,0 +1,40 @@
+<div class="table-responsive">
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th scope="col">Apparel</th>
+				<th scope="col" colspan="3">Target</th>
+				<th scope="col" colspan="6">Results</th>
+			</tr>
+			<tr class="active">
+				<th scope="col"></th>
+				<th scope="col">SV</th>
+				<th scope="col">E</th>
+				<th scope="col">Score</th>
+				<th scope="col">SV</th>
+				<th scope="col">target (%)</th>
+				<th scope="col">E</th>
+				<th scope="col">target (%)</th>
+				<th scope="col">Score total</th>
+				<th scope="col">target (%)</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for (app, score) in athlete.target_results_from_event(1).items() %}
+			<tr>
+				<th class="active">{{ app }}</th>
+				<td contenteditable="True">{{ score.target_sv }}</td>
+				<td contenteditable="True">{{ score.target_ex }}</td>
+				<td class="active">{{ score.target_total }}</td>
+				<td contenteditable="True">{{ score.result_sv }}</td>
+				<td class="active">{{ score.target_result_sv }} %</td>
+				<td contenteditable="True">{{ score.result_ex }}</td>
+				<td class="active">{{ score.target_result_ex }} %</td>
+				<td class="active">{{ score.result_total }}</td>
+				<td class="active">{{ score.target_result_total }} %</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+</table>

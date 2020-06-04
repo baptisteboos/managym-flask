@@ -42,25 +42,20 @@ class TestTargetResultsModel:
 		self.app_context.push()
 		db.create_all()
 
-	def teardown_method(self):
-		db.session.remove()
-		db.drop_all()
-		self.app_context.pop()
-
-	def test_correct_relation(self):
+		# We create few data for all tests
 		at1 = Athlete(first_name='Terminator', last_name='T-800', \
-					 gender='1', birth_date=date(1984, 10, 26))
+					  gender='1', birth_date=date(1984, 10, 26))
 		at2 = Athlete(first_name='John', last_name='Rambo', \
-					 gender='1', birth_date=date(1947, 7, 6))
+					  gender='1', birth_date=date(1947, 7, 6))
 		db.session.add_all([at1, at2])
 		db.session.commit()
 
-		ap1 = Apparel(short_name='fx', name='floor exercice')
-		ap2 = Apparel(short_name='ph', name='pommel horse')
-		ap3 = Apparel(short_name='sr', name='still rings')
-		ap4 = Apparel(short_name='vt', name='vault')
-		ap5 = Apparel(short_name='pb', name='parallel bars')
-		ap6 = Apparel(short_name='hb', name='high bar')
+		ap1 = Apparel(short_name='FX', name='floor exercice')
+		ap2 = Apparel(short_name='PH', name='pommel horse')
+		ap3 = Apparel(short_name='SR', name='still rings')
+		ap4 = Apparel(short_name='VT', name='vault')
+		ap5 = Apparel(short_name='PB', name='parallel bars')
+		ap6 = Apparel(short_name='HB', name='high bar')
 		db.session.add_all([ap1, ap2, ap3, ap4, ap5, ap6])
 		db.session.commit()
 
@@ -80,13 +75,30 @@ class TestTargetResultsModel:
 		db.session.add_all([tg1, tg2, tg3])
 		db.session.commit()
 
-		assert at1.target_results.count() == TargetResults.query.filter_by(athlete_id=1).count()
-		assert at2.target_results.count() == 1
+	def teardown_method(self):
+		db.session.remove()
+		db.drop_all()
+		self.app_context.pop()
 
+
+	def test_constructor(self):
+		a = Athlete.query.filter_by(first_name='Terminator').first()
+		assert a.target_results.count() == 2
+		assert a.target_results.count() == TargetResults.query.filter_by(athlete_id=1).count()
+		assert a.target_results.first().result_sv == 4.5
+		assert a.target_results.first().target_total == 13.5
+		assert a.target_results.first().result_total == 13.5
+		assert a.target_results.first().target_result_total == 100,00
+
+		ev = Event.query.get(1)
 		assert ev.target_results.count() == 3
 
-		assert tg1.athlete == at1
-		assert tg2.event == ev
+		tg = TargetResults.query.get(1)
+		assert tg.athlete == a
+		assert tg.event == ev
 
-		assert at1.target_results.first().result_sv == 4.5
+		score = a.target_results_from_event(1)
+		print(score)
+
+		
 

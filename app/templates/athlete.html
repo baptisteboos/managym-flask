@@ -8,10 +8,14 @@
 			</td>
 			<td>
 				<h1>{{ athlete.first_name + ' ' + athlete.last_name }}</h1>
-				<p>{{ _('Date of birth: ') + athlete.birth_date.strftime('%x') }}</p>
+				<p>{{ _('Date of birth: ') }}<b>{{ moment(athlete.birth_date).format('L') }}</b></p>
 				{% if athlete.email %}<p>{{ athlete.email }}</p>{% endif %}
+				{% if athlete.group %}
 				<p>{{ _('Group: ') }}<b>{{ athlete.group.name }}</b></p>
+				{% endif %}
 			</td>
 		</tr>
-	</table>
+		{% if athlete.target_results.all() %}
+		{% include "_target.html" %}	
+		{% endif %}
 {% endblock %}
