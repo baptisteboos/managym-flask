@@ -41,6 +41,9 @@ def create_app(config_class=Config):
     from app.athlete import bp as athlete_bp
     app.register_blueprint(athlete_bp, url_prefix='/athlete')
 
+    from app.errors import bp as errors_bp
+    app.register_blueprint(errors_bp)
+
     return app
 
 @babel.localeselector
