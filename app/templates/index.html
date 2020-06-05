@@ -19,7 +19,7 @@
             <td>{{ athlete.first_name }}</td>
             <td>{{ athlete.last_name }}</td>
             <td>
-              <a href="{{ url_for('main.athlete', id=athlete.id) }}"><span class="glyphicon glyphicon-user"></span> {{ _('Profile') }}</a>
+              <a href="{{ url_for('athlete.athlete', id=athlete.id) }}"><span class="glyphicon glyphicon-user"></span> {{ _('Profile') }}</a>
             </td>
           </tr>
       {% endfor %}
@@ -27,6 +27,6 @@
     </table>
     {% endif %}
     <br>
-  <p>{{ _('To register a new athlete, click') }} <a href="{{ url_for('main.athlete_register') }}">{{ _('here') }}</a></p>
+  <p>{{ _('To register a new athlete, click') }} <a href="{{ url_for('athlete.athlete_register') }}">{{ _('here') }}</a></p>
   </div>
 {% endblock %}
