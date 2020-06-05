@@ -101,15 +101,21 @@ class TargetResults(db.Model):
 
     @property
     def target_result_sv(self):
-        return round(self.result_sv / self.target_sv * 100, 2)
+        if self.target_sv != 0:
+            return round(self.result_sv / self.target_sv * 100, 2)
+        return 0
 
     @property
     def target_result_ex(self):
-        return round(self.result_ex / self.target_ex * 100, 2)
+        if self.target_ex != 0:
+            return round(self.result_ex / self.target_ex * 100, 2)
+        return 0
 
     @property
     def target_result_total(self):
-        return round((self.result_sv + self.result_ex) / (self.target_sv + self.target_ex) * 100, 2)
+        if (self.target_sv + self.target_ex) != 0:
+            return round((self.result_sv + self.result_ex) / (self.target_sv + self.target_ex) * 100, 2)
+        return 0
 
 class Group(db.Model):
     id = db.Column(db.Integer,
@@ -174,6 +180,15 @@ class Athlete(db.Model):
         else: 
             return  
         return score
+
+    def new_target_results(self, event_id):
+        list_target_results = [TargetResults(athlete_id=self.id, event_id=event_id,
+            apparel_id=i, target_sv=0, target_ex=0, result_sv=0, result_ex=0)
+            for i in range(1, 7)]
+        db.session.add_all(list_target_results)
+
+    def delete_target_results(self, event_id):
+        TargetResults.query.filter_by(athlete_id=self.id, event_id=event_id).delete()
 
 class Event(db.Model):
     id = db.Column(db.Integer, 

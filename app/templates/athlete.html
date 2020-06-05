@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block app_content %}
-	<table class="table table-hover">
+	<table class="table">
 		<tr>
 			<td width="192px">
 				<img src="{{ athlete.picture(128) }}">
@@ -13,9 +13,23 @@
 				{% if athlete.group %}
 				<p>{{ _('Group: ') }}<b>{{ athlete.group.name }}</b></p>
 				{% endif %}
+				<p><a href="{{ url_for('main.athlete_edit', id=athlete.id) }}">{{ _('Edit athlete') }}</a></p>
 			</td>
 		</tr>
-		{% if athlete.target_results.all() %}
-		{% include "_target.html" %}	
-		{% endif %}
+	</table>
+	{% if athlete.target_results.all() %}
+	{% include "_target.html" %}	
+	<p>
+		<form action="{{ url_for('main.athlete_delete_target', id=athlete.id) }}" method="post">
+			{{ form.hidden_tag() }}
+			{{ form.submit(value=_('Delete the target/results table'), class='btn btn-danger') }}
+		</form>
+	</p>
+	{% else%}
+	<p>
+	<form action="{{ url_for('main.athlete_new_target', id=athlete.id) }}" method="post">
+		{{ form.hidden_tag() }}
+		{{ form.submit(value=_('Add a new target/results table'), class='btn btn-default') }}
+	</p>	
+	{% endif %}
 {% endblock %}

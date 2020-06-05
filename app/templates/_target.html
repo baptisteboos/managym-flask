@@ -40,16 +40,20 @@
 <script>
 function calculate(elem) {
   var id = elem.id.charAt(elem.id.length-1);
-  var score = {"tsv": parseFloat(document.getElementById('tsv-' + id).innerText),
-  			   		 "tex": parseFloat(document.getElementById('tex-' + id).innerText),
-  			   		 "rsv": parseFloat(document.getElementById('rsv-' + id).innerText),
-  			   		 "rex": parseFloat(document.getElementById('rex-' + id).innerText)}
+  var tsv = parseFloat($('#tsv-' + id).text()); // target_start_value
+  var tex = parseFloat($('#tex-' + id).text()); // target_execution
+  var rsv = parseFloat($('#rsv-' + id).text()); // result_start_value
+  var rex = parseFloat($('#rex-' + id).text()); // result_execution
   // console.log(score)
-  $('#ttot-' + id).text(String((score['tsv'] + score['tex']).toFixed(2)))
-  $('#trsv-' + id).text(String((score['rsv'] / score['tsv'] * 100).toFixed(2)))
-  $('#trex-' + id).text(String((score['rex'] / score['tex'] * 100).toFixed(2)))
-  $('#rtot-' + id).text(String((score['rsv'] + score['rex']).toFixed(2)))
-  $('#trtot-' + id).text(String(((score['rsv'] + score['rex']) / 
-  															 (score['tsv'] + score['tex']) * 100).toFixed(2)))
+  // target_total
+  $('#ttot-' + id).text(String((tsv + tex).toFixed(2))); 
+  // target_result_start_value in %
+  $('#trsv-' + id).text(String((tsv != 0 ? rsv / tsv * 100 : 0).toFixed(2)));
+  // target_result_execution in %
+	  $('#trex-' + id).text(String((tex != 0 ? rex / tex * 100 : 0).toFixed(2)));
+  // result_total
+  $('#rtot-' + id).text(String((rsv + rex).toFixed(2)));
+  // target_result_total in %
+  $('#trtot-' + id).text(String(((tsv+tex) != 0 ? (rsv + rex) / (tsv + tex) * 100 : 0).toFixed(2)));
 }
 </script>
