@@ -4,7 +4,7 @@ from flask_babel import _, get_locale
 
 from app import db
 from app.athlete import bp
-from app.models import Athlete, Group
+from app.models import Athlete, Group, TargetResults
 from app.athlete.forms import AthleteRegisterForm, AthleteEditForm, EmptyForm
 
 @bp.route('/register', methods=['GET', 'POST'])
@@ -71,3 +71,17 @@ def athlete_delete_target(id):
             flash(_('Target deleted.'))
             return redirect(url_for('athlete.athlete', id=id))
     return redirect(url_for('main.index'))
+
+@bp.route('/<int:id>/update_target', methods=['POST'])
+@login_required
+def athlete_update_target(id):
+    EVENT_ID = 1
+    apparel_id = request.form['apparel_id']
+    target_result = TargetResults.query.filter_by(athlete_id=id, event_id=EVENT_ID, \
+                                                  apparel_id=apparel_id).first()
+    target_result.target_sv = request.form['tsv']
+    target_result.target_ex = request.form['tex']
+    target_result.result_sv = request.form['rsv']
+    target_result.result_ex = request.form['rex']
+    db.session.commit()
+    return redirect(url_for('athlete.athlete', id=id))

@@ -23,12 +23,12 @@
 			{% for (app, score) in athlete.target_results_from_event(1).items() %}
 			<tr id="apparel-{{ score.apparel.id }}">
 				<th class="active">{{ app }}</th>
-				<td id="tsv-{{ score.apparel.id }}" contenteditable="True" oninput="calculate(this);">{{ score.target_sv }}</td>
-				<td id="tex-{{ score.apparel.id }}" contenteditable="True" oninput="calculate(this);">{{ score.target_ex }}</td>
+				<td id="tsv-{{ score.apparel.id }}" contenteditable="True">{{ score.target_sv }}</td>
+				<td id="tex-{{ score.apparel.id }}" contenteditable="True">{{ score.target_ex }}</td>
 				<td id="ttot-{{ score.apparel.id }}" class="active">{{ score.target_total }}</td>
-				<td id="rsv-{{ score.apparel.id }}" contenteditable="True" oninput="calculate(this);">{{ score.result_sv }}</td>
+				<td id="rsv-{{ score.apparel.id }}" contenteditable="True">{{ score.result_sv }}</td>
 				<td id="trsv-{{ score.apparel.id }}" class="active">{{ score.target_result_sv }}</td>
-				<td id="rex-{{ score.apparel.id }}" contenteditable="True" oninput="calculate(this);">{{ score.result_ex }}</td>
+				<td id="rex-{{ score.apparel.id }}" contenteditable="True">{{ score.result_ex }}</td>
 				<td id="trex-{{ score.apparel.id }}" class="active">{{ score.target_result_ex }}</td>
 				<td id="rtot-{{ score.apparel.id }}" class="active">{{ score.result_total }}</td>
 				<td id="trtot-{{ score.apparel.id }}" class="active">{{ score.target_result_total }}</td>
@@ -37,23 +37,3 @@
 		</tbody>
 	</table>
 </div>
-<script>
-function calculate(elem) {
-  var id = elem.id.charAt(elem.id.length-1);
-  var tsv = parseFloat($('#tsv-' + id).text()); // target_start_value
-  var tex = parseFloat($('#tex-' + id).text()); // target_execution
-  var rsv = parseFloat($('#rsv-' + id).text()); // result_start_value
-  var rex = parseFloat($('#rex-' + id).text()); // result_execution
-  // console.log(score)
-  // target_total
-  $('#ttot-' + id).text(String((tsv + tex).toFixed(2))); 
-  // target_result_start_value in %
-  $('#trsv-' + id).text(String((tsv != 0 ? rsv / tsv * 100 : 0).toFixed(2)));
-  // target_result_execution in %
-	  $('#trex-' + id).text(String((tex != 0 ? rex / tex * 100 : 0).toFixed(2)));
-  // result_total
-  $('#rtot-' + id).text(String((rsv + rex).toFixed(2)));
-  // target_result_total in %
-  $('#trtot-' + id).text(String(((tsv+tex) != 0 ? (rsv + rex) / (tsv + tex) * 100 : 0).toFixed(2)));
-}
-</script>
