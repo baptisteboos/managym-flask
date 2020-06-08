@@ -11,6 +11,7 @@
       </div>
       <ul class="nav navbar-nav">
         <li><a href="{{ url_for('main.index') }}">{{ _('Home') }}</a></li>
+        <li><a href="{{ url_for('athlete.athletes') }}">{{ _('Athletes') }}</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         {% if current_user.is_anonymous %}
@@ -44,10 +45,16 @@
   {{ moment.lang(g.locale) }}
   <script>
 
+  function convertFloat(value) {
+    return value.match(/^[0-9]*\.?[0-9]*$/) ? parseFloat(value) : 0;
+  }
+
   $('[contenteditable').on('blur', event => {
     var id = event.target.id;
     id = id.slice(-1);
-    var tsv = parseFloat($('#tsv-' + id).text()); // target_start_value
+    var regex = /[0-9]*\.?[0-9]*/g;
+    var tsv = convertFloat($('#tsv-' + id).text()); // target_start_value
+    console.log(tsv);
     var tex = parseFloat($('#tex-' + id).text()); // target_execution
     var rsv = parseFloat($('#rsv-' + id).text()); // result_start_value
     var rex = parseFloat($('#rex-' + id).text()); // result_execution
@@ -69,19 +76,6 @@
   });
 
 
-
-
-
-  // $('[contenteditable]').on('keypress keyup blur', function(event) {
-  //   // $(this).val($(this).val().replace(/[^0-9\.]/g,''));
-  //   if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
-  //       event.preventDefault();
-  //   }
-  // });
-  // $('[contenteditable]').on('blur', function(event) {
-  //   var target = $( event.target );
-  //   console.log(target.text())
-  // });
   </script>
 
 {% endblock %}

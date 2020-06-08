@@ -19,8 +19,14 @@ def athlete_register():
         db.session.add(athlete)
         db.session.commit()
         flash(_('Succesfully athlete added'))
-        return redirect(url_for('main.index'))
+        return redirect(url_for('athlete.athletes'))
     return render_template('athlete/athlete_register.html', form=form, title=_('Registration'))
+
+@bp.route('/')
+@login_required
+def athletes():
+    athletes = Athlete.query.all()
+    return render_template('athlete/athletes.html', title=_('Athlete index'), athletes=athletes)
 
 
 @bp.route('/<int:id>')
@@ -56,7 +62,7 @@ def athlete_new_target(id):
         flash(_('New target create.'))
         return redirect(url_for('athlete.athlete', id=id))     
     else:
-        return redirect(url_for('main.index'))
+        return redirect(url_for('athlete.athletes'))
 
 @bp.route('/<int:id>/delete_target', methods=['POST'])
 @login_required
@@ -70,7 +76,7 @@ def athlete_delete_target(id):
             db.session.commit()
             flash(_('Target deleted.'))
             return redirect(url_for('athlete.athlete', id=id))
-    return redirect(url_for('main.index'))
+    return redirect(url_for('athlete.athletes'))
 
 @bp.route('/<int:id>/update_target', methods=['POST'])
 @login_required
