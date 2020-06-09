@@ -4,12 +4,13 @@ from flask_babel import _, get_locale
 
 from app import db
 from app.athlete import bp
-from app.models import Athlete, Group, TargetResults
+from app.models import Athlete, Group, TargetResults, Permission
 from app.athlete.forms import AthleteRegisterForm, AthleteEditForm, EmptyForm, SearchForm
-from app.decorators import admin_required, permission_required
+from app.decorators import permission_required
 
 @bp.route('/register', methods=['GET', 'POST'])
 @login_required
+@permission_required(Permission.CREATE)
 def athlete_register():
     form = AthleteRegisterForm()
     form.set_choices()
@@ -25,6 +26,7 @@ def athlete_register():
 
 @bp.route('/')
 @login_required
+@permission_required(Permission.READ)
 def athletes():
     form = SearchForm()
     page = request.args.get('page', 1, type=int)
@@ -39,6 +41,7 @@ def athletes():
 
 @bp.route('/<int:id>')
 @login_required
+@permission_required(Permission.READ)
 def athlete(id):
     athlete = Athlete.query.get_or_404(id)
     form = EmptyForm()
@@ -46,6 +49,7 @@ def athlete(id):
 
 @bp.route('/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
+@permission_required(Permission.EDIT)
 def athlete_edit(id):
     athlete = Athlete.query.get_or_404(id)
     form = AthleteEditForm()
@@ -60,6 +64,7 @@ def athlete_edit(id):
 
 @bp.route('/<int:id>/new_target', methods=['POST'])
 @login_required
+@permission_required(Permission.CREATE)
 def athlete_new_target(id):
     EVENT_ID = 1
     form = EmptyForm()
@@ -74,6 +79,7 @@ def athlete_new_target(id):
 
 @bp.route('/<int:id>/delete_target', methods=['POST'])
 @login_required
+@permission_required(Permission.DELETE)
 def athlete_delete_target(id):
     EVENT_ID = 1
     form = EmptyForm()
@@ -88,6 +94,7 @@ def athlete_delete_target(id):
 
 @bp.route('/<int:id>/update_target', methods=['POST'])
 @login_required
+@permission_required(Permission.EDIT)
 def athlete_update_target(id):
     EVENT_ID = 1
     apparel_id = request.form['apparel_id']
@@ -102,6 +109,7 @@ def athlete_update_target(id):
 
 @bp.route('/search')
 @login_required
+@permission_required(Permission.READ)
 def search():
     # if not search_form.validate():
     #     return redirect(url_for('main.explore'))

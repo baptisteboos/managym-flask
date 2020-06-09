@@ -5,6 +5,7 @@ from flask_babel import _, get_locale
 from app import db
 from app.main import bp
 from app.models import Athlete
+from app.decorators import admin_required
 
 
 @bp.before_app_request
@@ -19,4 +20,8 @@ def index():
     athletes = Athlete.query.all()
     return render_template('index.html', user=current_user, title=_('index'), athletes=athletes)
 
-
+@bp.route('/admin')
+@login_required
+@admin_required
+def admin():
+    return render_template('admin.html', title=_('Administration'))

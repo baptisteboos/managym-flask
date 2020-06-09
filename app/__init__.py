@@ -51,4 +51,5 @@ def getlocale():
     # return request.accept_languages.best_match(current_app.config['LANGUAGES'])
     return 'fr'
 
+
 from app import models

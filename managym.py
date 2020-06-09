@@ -9,3 +9,4 @@ app = create_app()
 def make_shell_context():
 	return {'db': db, 'User': User, 'Athlete': Athlete, 'Apparel': Apparel, 'Event': Event, 'Group': Group, \
 			'TargetResults': TargetResults, 'Role': Role, 'Permission': Permission}
+
