@@ -231,16 +231,23 @@ class Athlete(db.Model):
             score = {'FX': None, 'PH': None, 'SR': None, 'VT': None, 'PB': None, 'HB': None}
             for result in target_results:
                 score[result.apparatus.short_name.upper()] = result
-        # elif not target_results and self.gender ==  '2':
-        #     target_results = {'VT': [], 'UB': [], 'BB': [], 'FX': []}
+        elif target_results and self.gender == '2':
+            score = {'VT': None, 'UB': None, 'BB': None, 'FX': None}
+            for result in target_results:
+                score[result.apparatus.short_name.upper()] = result
         else: 
             return  
         return score
 
     def new_target_results(self, event_id):
-        list_target_results = [TargetResults(athlete_id=self.id, event_id=event_id,
-            apparatus_id=i, target_sv=0, target_ex=0, result_sv=0, result_ex=0)
-            for i in range(1, 7)]
+        if self.gender == '1':
+            list_target_results = [TargetResults(athlete_id=self.id, event_id=event_id,
+                apparatus_id=i, target_sv=0, target_ex=0, result_sv=0, result_ex=0)
+                for i in range(1, 7)]
+        elif self.gender == '2':
+            list_target_results = [TargetResults(athlete_id=self.id, event_id=event_id,
+                apparatus_id=i, target_sv=0, target_ex=0, result_sv=0, result_ex=0)
+                for i in [1,4,7,8]] # Floor, vault, Balance beam, Uneven bars
         db.session.add_all(list_target_results)
 
     def delete_target_results(self, event_id):

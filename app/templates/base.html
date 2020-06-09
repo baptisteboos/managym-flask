@@ -10,8 +10,11 @@
         <a class="navbar-brand" href="{{ url_for('main.index') }}">Managym</a>
       </div>
       <ul class="nav navbar-nav">
+        {% if current_user.is_authenticated %}
         <li><a href="{{ url_for('main.index') }}"><span class="glyphicon glyphicon-home"></span> {{ _('Home') }}</a></li>
         <li><a href="{{ url_for('athlete.athletes') }}"><span class="glyphicon glyphicon-user"></span> {{ _('Athletes') }}</a></li>
+        <li><a href="#"><span class="glyphicon glyphicon-calendar"></span> {{ _('Events') }}</a></li>
+        {% endif %}
       </ul>
       <ul class="nav navbar-nav navbar-right">
         {% if current_user.is_anonymous %}
