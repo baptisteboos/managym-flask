@@ -124,14 +124,14 @@ class TargetResults(db.Model):
     athlete_id = db.Column(db.Integer, 
                            db.ForeignKey('athlete.id'),
                            nullable=False)
-    apparel_id = db.Column(db.Integer, 
-                           db.ForeignKey('apparel.id'),
+    apparatus_id = db.Column(db.Integer, 
+                           db.ForeignKey('apparatus.id'),
                            nullable=False)
     event_id = db.Column(db.Integer,
                          db.ForeignKey('event.id'),
                          nullable=False)
     
-    __table_args__ = (db.UniqueConstraint(athlete_id, apparel_id, event_id),)
+    __table_args__ = (db.UniqueConstraint(athlete_id, apparatus_id, event_id),)
 
     target_sv = db.Column(db.Float,
                           nullable=True)
@@ -142,10 +142,10 @@ class TargetResults(db.Model):
     result_ex = db.Column(db.Float,
                           nullable=True)
     # Simple relation don't need a backref for the moment
-    apparel = db.relationship('Apparel')
+    apparatus = db.relationship('Apparatus')
 
     def __repr__(self):
-        return f'<TargetResults: {self.athlete_id}, {self.apparel_id}, {self.event_id}'
+        return f'<TargetResults: {self.athlete_id}, {self.apparatus_id}, {self.event_id}'
 
     @property
     def target_total(self):
@@ -230,7 +230,7 @@ class Athlete(db.Model):
         if target_results and self.gender == '1':
             score = {'FX': None, 'PH': None, 'SR': None, 'VT': None, 'PB': None, 'HB': None}
             for result in target_results:
-                score[result.apparel.short_name.upper()] = result
+                score[result.apparatus.short_name.upper()] = result
         # elif not target_results and self.gender ==  '2':
         #     target_results = {'VT': [], 'UB': [], 'BB': [], 'FX': []}
         else: 
@@ -239,7 +239,7 @@ class Athlete(db.Model):
 
     def new_target_results(self, event_id):
         list_target_results = [TargetResults(athlete_id=self.id, event_id=event_id,
-            apparel_id=i, target_sv=0, target_ex=0, result_sv=0, result_ex=0)
+            apparatus_id=i, target_sv=0, target_ex=0, result_sv=0, result_ex=0)
             for i in range(1, 7)]
         db.session.add_all(list_target_results)
 
@@ -276,7 +276,7 @@ class Event(db.Model):
         return f'<Event {self.name}>'
 
 
-class Apparel(db.Model):
+class Apparatus(db.Model):
     id = db.Column(db.Integer, 
                    primary_key=True)
     short_name = db.Column(db.String(3), 

@@ -97,9 +97,9 @@ def athlete_delete_target(id):
 @permission_required(Permission.EDIT)
 def athlete_update_target(id):
     EVENT_ID = 1
-    apparel_id = request.form['apparel_id']
+    apparatus_id = request.form['apparatus_id']
     target_result = TargetResults.query.filter_by(athlete_id=id, event_id=EVENT_ID, \
-                                                  apparel_id=apparel_id).first()
+                                                  apparatus_id=apparatus_id).first()
     target_result.target_sv = request.form['tsv']
     target_result.target_ex = request.form['tex']
     target_result.result_sv = request.form['rsv']
