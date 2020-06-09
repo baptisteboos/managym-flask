@@ -1,11 +1,12 @@
-from flask import render_template, url_for, redirect, flash, g, request
+from flask import render_template, url_for, redirect, flash, g, request, current_app
 from flask_login import current_user, login_required
 from flask_babel import _, get_locale
 
 from app import db
 from app.athlete import bp
 from app.models import Athlete, Group, TargetResults
-from app.athlete.forms import AthleteRegisterForm, AthleteEditForm, EmptyForm
+from app.athlete.forms import AthleteRegisterForm, AthleteEditForm, EmptyForm, SearchForm
+from app.decorators import admin_required, permission_required
 
 @bp.route('/register', methods=['GET', 'POST'])
 @login_required
@@ -25,8 +26,15 @@ def athlete_register():
 @bp.route('/')
 @login_required
 def athletes():
-    athletes = Athlete.query.all()
-    return render_template('athlete/athletes.html', title=_('Athlete index'), athletes=athletes)
+    form = SearchForm()
+    page = request.args.get('page', 1, type=int)
+    athletes = Athlete.query.order_by('last_name').paginate(page, current_app.config['ATHLETES_PER_PAGE'], False)
+    next_url = url_for('athlete.athletes', page=athletes.next_num) \
+        if athletes.has_next else None
+    prev_url = url_for('athlete.athletes', page=athletes.prev_num) \
+        if athletes.has_prev else None
+    return render_template('athlete/athletes.html', title=_('Athlete index'), athletes=athletes.items, \
+        next_url=next_url, prev_url=prev_url, form=form)
 
 
 @bp.route('/<int:id>')
@@ -91,3 +99,23 @@ def athlete_update_target(id):
     target_result.result_ex = request.form['rex']
     db.session.commit()
     return redirect(url_for('athlete.athlete', id=id))
+
+@bp.route('/search')
+@login_required
+def search():
+    # if not search_form.validate():
+    #     return redirect(url_for('main.explore'))
+    form = SearchForm()
+    page = request.args.get('page', 1, type=int)
+    search = f"%{request.args.get('q', ' ').capitalize()}%"
+    athletes = Athlete.query.filter((Athlete.first_name.like(search)) | \
+        (Athlete.last_name.like(search))).order_by(Athlete.last_name).\
+        paginate(page, current_app.config['ATHLETES_PER_PAGE'], False)
+    print(athletes.items)
+    next_url = url_for('athlete.search', q=search, page=athletes.next_num) \
+        if athletes.has_next else None
+    prev_url = url_for('athlete.search', q=search, page=athletes.prev_num) \
+        if athletes.has_prev else None
+    return render_template('athlete/athletes.html', title=_('Search athletes'), athletes=athletes.items, 
+        next_url=next_url, prev_url=prev_url, form=form)
+        # , posts=posts, next_url=next_url, prev_url=prev_url)

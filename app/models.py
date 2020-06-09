@@ -32,6 +32,13 @@ class User(UserMixin, db.Model):
                       nullable=False)
     salt = db.Column(db.String(128))
     password_hash = db.Column(db.String(128))
+    role_id = db.Column(db.Integer,
+                        db.ForeignKey('roles.id'))
+
+    def __init__(self, **kwargs):
+        super(User, self).__init__(**kwargs)
+        if self.role is None:
+            self.role = Role.query.filter_by(default=True).first()
 
     def __repr__(self):
         return f'<User {self.username}>'
@@ -56,9 +63,58 @@ class User(UserMixin, db.Model):
             return
         return User.query.get(id)
 
+    def can(self, permissions):
+        return self is not None and \
+            (self.role.permissions & permissions) == permissions # bitwise operation
+
+    def is_administrator(self):
+        return self.can(Permission.ADMINISTER)
+
 @login.user_loader
 def load_user(id):
   return User.query.get(int(id))
+
+class Permission:
+    READ = 0x01
+    EDIT = 0x02
+    CREATE = 0x04
+    DELETE = 0x08
+    ADMINISTER = 0x80
+
+
+class Role(db.Model):
+    __tablename__ = 'roles'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True)
+    # Should be set True only for one role and False for the others
+    default = db.Column(db.Boolean, default=False, index=True)
+    # Is used as bit flags, each tacks will be assigned a bit position
+    permissions = db.Column(db.Integer)
+    users = db.relationship('User', backref='role', lazy='dynamic')
+
+    def __repr__(self):
+        return f'<Role {self.name}>'
+
+    @staticmethod
+    def insert_roles():
+        roles = {
+            'User': (Permission.READ, True),
+            'Moderator': (Permission.READ |
+                          Permission.EDIT |
+                          Permission.CREATE |
+                          Permission.DELETE, False),
+            'Adminisrator': (0xff, False)
+        }
+        for r in roles:
+            # Tried to find an existant role to update it otherwise we create a new one
+            role = Role.query.filter_by(name=r).first()
+            if role is None:
+                role = Role(name=r)
+            role.permissions = roles[r][0]
+            role.default = roles[r][1]
+            db.session.add(role)
+        db.session.commit()
+
 
 
 class TargetResults(db.Model):
