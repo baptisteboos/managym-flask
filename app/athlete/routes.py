@@ -17,7 +17,8 @@ def athlete_register():
     if form.validate_on_submit():
         athlete = Athlete(first_name=form.first_name.data.capitalize(), \
                           last_name=form.last_name.data.capitalize(), \
-                          email=form.email.data, gender=form.gender.data, birth_date=form.birth_date.data)
+                          email=form.email.data, gender=form.gender.data, \
+                          birth_date=form.birth_date.data, group_id=form.group_id.data)
         db.session.add(athlete)
         db.session.commit()
         flash(_('Succesfully athlete added'))
@@ -53,8 +54,10 @@ def athlete(id):
 def athlete_edit(id):
     athlete = Athlete.query.get_or_404(id)
     form = AthleteEditForm()
+    form.set_choices()
     if form.validate_on_submit():
         athlete.email = form.email.data
+        athlete.group_id = form.group_id.data
         db.session.commit()
         flash(_('Your changes have been saved.'))
         return redirect(url_for('athlete.athlete', id=id))

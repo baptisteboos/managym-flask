@@ -10,6 +10,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db, login
 
+user_group = db.Table('user_group',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('group_id', db.Integer, db.ForeignKey('group.id'))
+)
+
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, 
@@ -34,6 +39,8 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
     role_id = db.Column(db.Integer,
                         db.ForeignKey('roles.id'))
+    groups = db.relationship('Group', secondary=user_group, 
+        lazy='dynamic', backref=db.backref('users', lazy='dynamic'))
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -69,6 +76,12 @@ class User(UserMixin, db.Model):
 
     def is_administrator(self):
         return self.can(Permission.ADMINISTER)
+
+    def athletes_in_groups(self):
+        return Athlete.query.join(Group, (Athlete.group_id == Group.id)).join(
+            user_group, (user_group.c.group_id == Group.id)).filter(
+            user_group.c.user_id == self.id).order_by(Athlete.last_name)
+
 
 @login.user_loader
 def load_user(id):

@@ -21,7 +21,11 @@ class AthleteRegisterForm(FlaskForm):
 
 class AthleteEditForm(FlaskForm):
     email = StringField(_l('Email'), validators=[DataRequired(), Email()])
+    group_id = SelectField(_l('Group'), coerce=int)
     submit = SubmitField(_l('Register'))
+
+    def set_choices(self):
+        self.group_id.choices = [(g.id, g.name) for g in Group.query.order_by('name')]
 
 class EmptyForm(FlaskForm):
 	submit = SubmitField(_l('Submit'))

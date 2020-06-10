@@ -4,20 +4,23 @@
   <h1>{{ _('Hello %(name)s', name=user.first_name) }}</h1>
   <div class="col-md-6">
     {% if athletes %}
-    <table class="table table-hover">
+    <br>
+    <table class="table table-hover text-center">
       <thead class="thead-dark">
         <tr>
-          <th scope="col">#</th>
-          <th scope="col">{{ _('First') }}</th>
-          <th scope="col">{{ _('Last') }}</th>
+          <th scope="col" class="text-center">{{ _('First') }}</th>
+          <th scope="col" class="text-center">{{ _('Last') }}</th>
+          <th scope="col" class="text-center">{{ _('Date of birth') }}</th>
+          <th scope="col" class="text-center">{{ _('Phone') }}</th>
         </tr>
       </thead>
       <tbody>
       {% for athlete in athletes %}
           <tr>
-            <th scope="row">{{ athlete.id }}</th>
             <td>{{ athlete.first_name }}</td>
             <td>{{ athlete.last_name }}</td>
+            <td>{{ moment(athlete.birth_date).format('L') }}</td>
+            <td></td>
             <td>
               <a href="{{ url_for('athlete.athlete', id=athlete.id) }}"><span class="glyphicon glyphicon-user"></span> {{ _('Profile') }}</a>
             </td>
@@ -25,6 +28,9 @@
       {% endfor %}
       </tbody>
     </table>
+    {% else %}
+    <br>
+    <h4>{{ _('You have no athlete in your group') }}</h4>
     {% endif %}
   </div>
 {% endblock %}
