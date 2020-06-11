@@ -17,7 +17,7 @@ class AthleteRegisterForm(FlaskForm):
     submit = SubmitField(_l('Register'))
 
     def set_choices(self):
-    	self.group_id.choices = [(g.id, g.name) for g in Group.query.order_by('name')]
+        self.group_id.choices = [(g.id, g.name) for g in Group.query.order_by('name')]
 
 class AthleteEditForm(FlaskForm):
     email = StringField(_l('Email'), validators=[DataRequired(), Email()])
@@ -28,7 +28,14 @@ class AthleteEditForm(FlaskForm):
         self.group_id.choices = [(g.id, g.name) for g in Group.query.order_by('name')]
 
 class EmptyForm(FlaskForm):
-	submit = SubmitField(_l('Submit'))
+    submit = SubmitField(_('Submit'))
+
+class NewTargetResultsForm(FlaskForm):
+    event = SelectField(_l('Event', coerce=int))
+    submit = SubmitField(_l('Submit'))
+
+    def set_choices(self, list_tuples):
+        self.event.choices = [(e.id, e.name) for e in list_tuples]
 
 class SearchForm(FlaskForm):
     q = StringField(_l('Search for athletes...'), validators=[DataRequired()])

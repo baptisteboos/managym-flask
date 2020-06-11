@@ -5,7 +5,8 @@ from flask_babel import _, get_locale
 from app import db
 from app.athlete import bp
 from app.models import Athlete, Group, TargetResults, Permission, Event
-from app.athlete.forms import AthleteRegisterForm, AthleteEditForm, EmptyForm, SearchForm
+from app.athlete.forms import AthleteRegisterForm, AthleteEditForm, EmptyForm,\
+    SearchForm, NewTargetResultsForm
 from app.decorators import permission_required
 
 @bp.route('/register', methods=['GET', 'POST'])
@@ -45,10 +46,20 @@ def athletes():
 @permission_required(Permission.READ)
 def athlete(id):
     athlete = Athlete.query.get_or_404(id)
-    events_participated = Event.query.join(TargetResults, (TargetResults.event_id==Event.id)).filter(\
-                          TargetResults.athlete_id==athlete.id).all()
-    print(events_participated)
-    form = EmptyForm()
+    events_participated = Event.query.join(TargetResults).filter(\
+                          TargetResults.athlete_id == id).order_by(\
+                          Event.date.desc()).all()
+
+    # Event object required
+    query = db.session.query(Event.id, Event.name)
+    # All the event_id that an athlete participates
+    subquery = db.session.query(TargetResults.event_id).filter(\
+        TargetResults.athlete_id == id).distinct()
+    # Event that an athlete has not target/resuts
+    events = query.filter(~Event.id.in_(subquery)).all()
+
+    form = NewTargetResultsForm()
+    form.set_choices(events)
     return render_template('athlete/athlete.html', athlete=athlete, form=form, \
         events_participated=events_participated)
 
@@ -73,11 +84,11 @@ def athlete_edit(id):
 @login_required
 @permission_required(Permission.CREATE)
 def athlete_new_target(id):
-    EVENT_ID = 2
+    event_id = request.form['event']
     form = EmptyForm()
     if form.validate_on_submit():
         athlete = Athlete.query.get_or_404(id)
-        athlete.new_target_results(event_id=EVENT_ID)
+        athlete.new_target_results(event_id=event_id)
         db.session.commit()
         flash(_('New target create.'))
         return redirect(url_for('athlete.athlete', id=id))     

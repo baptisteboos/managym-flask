@@ -1,32 +1,34 @@
 {% extends "base.html" %}
 
 {% block app_content %}
-	<table class="table">
-		<tr>
-			<td width="192px">
-				<img src="{{ athlete.picture(128) }}">
-			</td>
-			<td>
-				<h1>{{ athlete.first_name + ' ' + athlete.last_name }}</h1>
-				<p>{{ _('Date of birth: ') }}<b>{{ moment(athlete.birth_date).format('L') }}</b></p>
-				{% if athlete.email %}<p>{{ athlete.email }}</p>{% endif %}
-				{% if athlete.group %}
-				<p>{{ _('Group: ') }}<b>{{ athlete.group.name }}</b></p>
-				{% endif %}
-				<p><a href="{{ url_for('athlete.athlete_edit', id=athlete.id) }}">{{ _('Edit athlete') }}</a></p>
-			</td>
-		</tr>
-	</table>
-  <h3>{{ _('Targets') }}</h3>	
-	<p>
-	<form action="{{ url_for('athlete.athlete_new_target', id=athlete.id) }}" method="post">
-		{{ form.hidden_tag() }}
-		{{ form.submit(value=_('Add a new target/results table'), class='btn btn-default') }}
-	</p>
-	{% if not athlete.target_results.all() %}
-	<h4>{{ _('No target for this athlete') }}</h4>
-	{% else %}
-	<div class="accordion" id="accordionTargetResults">
+  <table class="table">
+    <tr>
+      <td width="192px">
+        <img src="{{ athlete.picture(128) }}">
+      </td>
+      <td>
+        <h1>{{ athlete.first_name + ' ' + athlete.last_name }}</h1>
+        <p>{{ _('Date of birth: ') }}<b>{{ moment(athlete.birth_date).format('L') }}</b></p>
+        {% if athlete.email %}<p>{{ athlete.email }}</p>{% endif %}
+        {% if athlete.group %}
+        <p>{{ _('Group: ') }}<b>{{ athlete.group.name }}</b></p>
+        {% endif %}
+        <p><a href="{{ url_for('athlete.athlete_edit', id=athlete.id) }}">{{ _('Edit athlete') }}</a></p>
+      </td>
+    </tr>
+  </table>
+  <h3>{{ _('Targets') }}</h3> 
+  <p>
+  <form action="{{ url_for('athlete.athlete_new_target', id=athlete.id) }}" method="post">
+    {{ form.hidden_tag() }}
+    {{ form.event }}
+    {{ form.submit(value=_('Add a new target/results table'), class='btn btn-default') }}
+  </form>
+  </p>
+  {% if not athlete.target_results.all() %}
+  <h4>{{ _('No target for this athlete') }}</h4>
+  {% else %}
+  <div class="accordion" id="accordionTargetResults">
     {% for event in events_participated %}
     <div class="card">
       <div class="card-header" id="headingEvent{{ event.id }}">
@@ -40,18 +42,18 @@
 
       <div id="collapseEvent{{ event.id }}" class="collapse" aria-labelledby="headingEvent{{ event.id }}" data-parent="#accordionTargetResults">
         <div class="card-body">
-  				{% include "athlete/_target.html" %}	
-  				<p>
-  					<form action="{{ url_for('athlete.athlete_delete_target', id=athlete.id, event=event.id) }}" method="post">
-  						{{ form.hidden_tag() }}
-  						{{ form.submit(value=_('Delete the target/results table'), class='btn btn-danger') }}
-  					</form>
-  				</p>
+          {% include "athlete/_target.html" %}  
+          <p>
+            <form action="{{ url_for('athlete.athlete_delete_target', id=athlete.id, event=event.id) }}" method="post">
+              {{ form.hidden_tag() }}
+              {{ form.submit(value=_('Delete the target/results table'), class='btn btn-danger') }}
+            </form>
+          </p>
 
         </div>
       </div>
     </div>
     {% endfor %}
   </div>
-	{% endif %}
+  {% endif %}
 {% endblock %}
