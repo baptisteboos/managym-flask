@@ -13,7 +13,7 @@
         {% if current_user.is_authenticated %}
         <li><a href="{{ url_for('main.index') }}"><span class="glyphicon glyphicon-home"></span> {{ _('Home') }}</a></li>
         <li><a href="{{ url_for('athlete.athletes') }}"><span class="glyphicon glyphicon-user"></span> {{ _('Athletes') }}</a></li>
-        <li><a href="#"><span class="glyphicon glyphicon-calendar"></span> {{ _('Events') }}</a></li>
+        <li><a href="{{ url_for('main.events') }}"><span class="glyphicon glyphicon-calendar"></span> {{ _('Events') }}</a></li>
         {% endif %}
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -55,29 +55,28 @@
     return value.match(/^[0-9]*\.?[0-9]*$/) ? parseFloat(value) : 0;
   }
 
-  $('[contenteditable').on('blur', event => {
-    var id = event.target.id;
-    id = id.slice(-1);
-    var regex = /[0-9]*\.?[0-9]*/g;
-    var tsv = convertFloat($('#tsv-' + id).text()); // target_start_value
-    console.log(tsv);
-    var tex = parseFloat($('#tex-' + id).text()); // target_execution
-    var rsv = parseFloat($('#rsv-' + id).text()); // result_start_value
-    var rex = parseFloat($('#rex-' + id).text()); // result_execution
-    // console.log(score)
+  $('[contenteditable').on('blur', evt => {
+    var apparatus = evt.target.className.slice(-1);
+    var par = $(evt.target).parent()
+    // var regex = /[0-9]*\.?[0-9]*/g;
+    var tsv = parseFloat($(par).children('.tsv-' + apparatus).text()); // target_start_value
+    var tex = parseFloat($(par).children('.tex-' + apparatus).text()); // target_execution
+    var rsv = parseFloat($(par).children('.rsv-' + apparatus).text()); // result_start_value
+    var rex = parseFloat($(par).children('.rex-' + apparatus).text()); // result_execution
     // target_total
-    $('#ttot-' + id).text(String((tsv + tex).toFixed(2))); 
+    $(par).children('.ttot-' + apparatus).text(String((tsv + tex).toFixed(2))); 
     // target_result_start_value in %
-    $('#trsv-' + id).text(String((tsv != 0 ? rsv / tsv * 100 : 0).toFixed(2)));
+    $(par).children('.trsv-' + apparatus).text(String((tsv != 0 ? rsv / tsv * 100 : 0).toFixed(2)));
     // target_result_execution in %
-      $('#trex-' + id).text(String((tex != 0 ? rex / tex * 100 : 0).toFixed(2)));
+    $(par).children('.trex-' + apparatus).text(String((tex != 0 ? rex / tex * 100 : 0).toFixed(2)));
     // result_total
-    $('#rtot-' + id).text(String((rsv + rex).toFixed(2)));
+    $(par).children('.rtot-' + apparatus).text(String((rsv + rex).toFixed(2)));
     // target_result_total in %
-    $('#trtot-' + id).text(String(((tsv+tex) != 0 ? (rsv + rex) / (tsv + tex) * 100 : 0).toFixed(2)));
+    $(par).children('.trtot-' + apparatus).text(String(((tsv+tex) != 0 ? (rsv + rex) / (tsv + tex) * 100 : 0).toFixed(2)));
 
     var url =  window.location.pathname + '/update_target';
-    var data = {apparel_id: id, tsv: tsv, tex: tex, rsv: rsv, rex: rex};
+    var event_id = $(evt.target).closest('.collapse').attr('id').slice(-1);
+    var data = {event_id: event_id, apparatus_id: apparatus, tsv: tsv, tex: tex, rsv: rsv, rex: rex};
     $.post(url, data);
   });
 

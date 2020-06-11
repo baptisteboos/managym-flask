@@ -20,18 +20,18 @@
 			</tr>
 		</thead>
 		<tbody>
-			{% for (app, score) in athlete.target_results_from_event(1).items() %}
-			<tr id="apparatus-{{ score.apparatus.id }}">
+			{% for (app, score) in athlete.target_results_from_event(event.id).items() %}
+			<tr class="apparatus-{{ score.apparatus.id }}">
 				<th class="active">{{ app }}</th>
-				<td id="tsv-{{ score.apparatus.id }}" contenteditable="True">{{ score.target_sv }}</td>
-				<td id="tex-{{ score.apparatus.id }}" contenteditable="True">{{ score.target_ex }}</td>
-				<td id="ttot-{{ score.apparatus.id }}" class="active">{{ score.target_total }}</td>
-				<td id="rsv-{{ score.apparatus.id }}" contenteditable="True">{{ score.result_sv }}</td>
-				<td id="trsv-{{ score.apparatus.id }}" class="active">{{ score.target_result_sv }}</td>
-				<td id="rex-{{ score.apparatus.id }}" contenteditable="True">{{ score.result_ex }}</td>
-				<td id="trex-{{ score.apparatus.id }}" class="active">{{ score.target_result_ex }}</td>
-				<td id="rtot-{{ score.apparatus.id }}" class="active">{{ score.result_total }}</td>
-				<td id="trtot-{{ score.apparatus.id }}" class="active">{{ score.target_result_total }}</td>
+				<td class="tsv-{{ score.apparatus.id }}" contenteditable="True">{{ score.target_sv }}</td>
+				<td class="tex-{{ score.apparatus.id }}" contenteditable="True">{{ score.target_ex }}</td>
+				<td class="ttot-{{ score.apparatus.id }}" class="active">{{ score.target_total }}</td>
+				<td class="rsv-{{ score.apparatus.id }}" contenteditable="True">{{ score.result_sv }}</td>
+				<td class="trsv-{{ score.apparatus.id }}" class="active">{{ score.target_result_sv }}</td>
+				<td class="rex-{{ score.apparatus.id }}" contenteditable="True">{{ score.result_ex }}</td>
+				<td class="trex-{{ score.apparatus.id }}" class="active">{{ score.target_result_ex }}</td>
+				<td class="rtot-{{ score.apparatus.id }}" class="active">{{ score.result_total }}</td>
+				<td class="trtot-{{ score.apparatus.id }}" class="active">{{ score.target_result_total }}</td>
 			</tr>
 			{% endfor %}
 		</tbody>

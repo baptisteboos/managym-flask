@@ -4,7 +4,7 @@ from flask_babel import _, get_locale
 
 from app import db
 from app.athlete import bp
-from app.models import Athlete, Group, TargetResults, Permission
+from app.models import Athlete, Group, TargetResults, Permission, Event
 from app.athlete.forms import AthleteRegisterForm, AthleteEditForm, EmptyForm, SearchForm
 from app.decorators import permission_required
 
@@ -45,8 +45,12 @@ def athletes():
 @permission_required(Permission.READ)
 def athlete(id):
     athlete = Athlete.query.get_or_404(id)
+    events_participated = Event.query.join(TargetResults, (TargetResults.event_id==Event.id)).filter(\
+                          TargetResults.athlete_id==athlete.id).all()
+    print(events_participated)
     form = EmptyForm()
-    return render_template('athlete/athlete.html', athlete=athlete, form=form)
+    return render_template('athlete/athlete.html', athlete=athlete, form=form, \
+        events_participated=events_participated)
 
 @bp.route('/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
@@ -69,7 +73,7 @@ def athlete_edit(id):
 @login_required
 @permission_required(Permission.CREATE)
 def athlete_new_target(id):
-    EVENT_ID = 1
+    EVENT_ID = 2
     form = EmptyForm()
     if form.validate_on_submit():
         athlete = Athlete.query.get_or_404(id)
@@ -84,12 +88,13 @@ def athlete_new_target(id):
 @login_required
 @permission_required(Permission.DELETE)
 def athlete_delete_target(id):
-    EVENT_ID = 1
+    event_id = request.args.get('event', 0, int)
+    Event.query.get_or_404(event_id)
     form = EmptyForm()
     if form.validate_on_submit():
         athlete = Athlete.query.get_or_404(id)
         if athlete.target_results.all():
-            athlete.delete_target_results(event_id=EVENT_ID)
+            athlete.delete_target_results(event_id=event_id)
             db.session.commit()
             flash(_('Target deleted.'))
             return redirect(url_for('athlete.athlete', id=id))
@@ -99,9 +104,9 @@ def athlete_delete_target(id):
 @login_required
 @permission_required(Permission.EDIT)
 def athlete_update_target(id):
-    EVENT_ID = 1
+    event_id = request.form['event_id']
     apparatus_id = request.form['apparatus_id']
-    target_result = TargetResults.query.filter_by(athlete_id=id, event_id=EVENT_ID, \
+    target_result = TargetResults.query.filter_by(athlete_id=id, event_id=event_id, \
                                                   apparatus_id=apparatus_id).first()
     target_result.target_sv = request.form['tsv']
     target_result.target_ex = request.form['tex']

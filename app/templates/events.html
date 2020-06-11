@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+<h1>{{ _('Events') }}</h1>
+  <div class="col-md-12">
+  {% if events %}
+{#     <form class="col-md-4" method="get" action="{{ url_for('athlete.search') }}">
+      <div class="form-group">
+      {{ form.q(class='form-control', placeholder=form.q.label.text) }}
+      </div>
+    </form> #}
+    <table class="table table-hover text-center">
+      <thead class="thead-dark">
+        <tr>
+          {# <th scope="col">#</th> #}
+          <th scope="col" class="text-center">{{ _('Name') }}</th>
+          <th scope="col" class="text-center">{{ _('Date') }}</th>
+          <th scope="col" class="text-center">{{ _('Place') }}</th>
+          <th scope="col" class="text-right">
+            <button type="button" class="btn btn-primary" onclick="location.href='{{ url_for('main.event_register') }}'">
+              <span class="glyphicon glyphicon-plus"> {{ _('Add new ') }}</span></button>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for event in events %}
+          <tr>
+            {# <th scope="row">{{ athlete.id }}</th> #}
+            <td>{{ event.name }}</td>
+            <td>{{ event.date.strftime("%Y-%m-%d") }}</td>
+            <td>{{ event.place }}</td>
+            <td>
+              <a href="#"><span class="glyphicon glyphicon-user"></span> {{ _('Edit') }}</a>
+            </td>
+          </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <nav aria-label="...">
+      <ul class="pager">
+        <li class="previous{% if not prev_url %} disabled{% endif %}">
+          <a href="{{ prev_url or '#' }}">
+            <span aria-hidden="true">&larr;</span> {{ _('Previous') }}
+          </a>
+        </li>
+        <li class="next{% if not next_url %} disabled{% endif %}">
+          <a href="{{ next_url or '#' }}">
+            {{ _('Next') }} <span aria-hidden="true">&rarr;</span>
+          </a>  
+        </li>
+      </ul>
+    </nav>
+  {% endif %}
+  </div>
+{% endblock %}

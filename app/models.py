@@ -311,13 +311,13 @@ class Apparatus(db.Model):
     def __repr__(self):
         return f'<Name {self.name}>'
 
-class TargetScore():
-    def __init__(self, target_sv, target_ex, result_sv, result_ex):
-        self.target_sv = target_sv
-        self.target_ex = target_ex
-        self.result_sv = result_sv
-        self.result_ex = result_ex
+# class TargetScore():
+#     def __init__(self, target_sv, target_ex, result_sv, result_ex):
+#         self.target_sv = target_sv
+#         self.target_ex = target_ex
+#         self.result_sv = result_sv
+#         self.result_ex = result_ex
 
-    @staticmethod
-    def target_total(self):
-        return self.target_sv + self.target_ex
+#     @staticmethod
+#     def target_total(self):
+#         return self.target_sv + self.target_ex
