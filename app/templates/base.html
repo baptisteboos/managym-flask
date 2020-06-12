@@ -51,33 +51,57 @@
   {{ moment.lang(g.locale) }}
   <script>
 
-  function convertFloat(value) {
-    return value.match(/^[0-9]*\.?[0-9]*$/) ? parseFloat(value) : 0;
+  function validateScoreColor(elem) {
+    if (parseFloat($(elem).text()) >= 90) {
+      $(elem).css('color', 'green').css('font-weight', 'bold');
+    } else if (parseFloat($(elem).text()) < 80) {
+      $(elem).css('color', 'red').css('font-weight', 'bold');
+    } else {
+      $(elem).css('color', '#b9b226').css('font-weight', 'bold');
+    }
   }
 
-  $('[contenteditable').on('blur', evt => {
-    var apparatus = evt.target.className.slice(-1);
-    var par = $(evt.target).parent()
-    // var regex = /[0-9]*\.?[0-9]*/g;
-    var tsv = parseFloat($(par).children('.tsv-' + apparatus).text()); // target_start_value
-    var tex = parseFloat($(par).children('.tex-' + apparatus).text()); // target_execution
-    var rsv = parseFloat($(par).children('.rsv-' + apparatus).text()); // result_start_value
-    var rex = parseFloat($(par).children('.rex-' + apparatus).text()); // result_execution
-    // target_total
-    $(par).children('.ttot-' + apparatus).text(String((tsv + tex).toFixed(2))); 
-    // target_result_start_value in %
-    $(par).children('.trsv-' + apparatus).text(String((tsv != 0 ? rsv / tsv * 100 : 0).toFixed(2)));
-    // target_result_execution in %
-    $(par).children('.trex-' + apparatus).text(String((tex != 0 ? rex / tex * 100 : 0).toFixed(2)));
-    // result_total
-    $(par).children('.rtot-' + apparatus).text(String((rsv + rex).toFixed(2)));
-    // target_result_total in %
-    $(par).children('.trtot-' + apparatus).text(String(((tsv+tex) != 0 ? (rsv + rex) / (tsv + tex) * 100 : 0).toFixed(2)));
+  $('[contenteditable]').on('blur', evt => {
+    if (!$(evt.target).text().match(/^[0-9]*\.?[0-9]*$/)) {
+      $(evt.target).text('0');
+    }
 
+    // Convert number in cells in float
+    var row = $(evt.target).parent()
+    var tsv = parseFloat($(row).children('.tsv').text());   // target_start_value
+    var tex = parseFloat($(row).children('.tex').text());   // target_execution
+    var rsv = parseFloat($(row).children('.rsv').text());   // result_start_value
+    var rex = parseFloat($(row).children('.rex').text());   // result_execution 
+
+    // Calcultate empties cells
+    // target_total
+    $(row).children('.ttot').text(String((tsv + tex).toFixed(2))); 
+
+    // target_result_start_value in %
+    $(row).children('.trsv').text(String((tsv != 0 ? rsv / tsv * 100 : 0).toFixed(2)));
+    validateScoreColor($(row).children('.trsv'))
+
+    // target_result_execution in %
+    $(row).children('.trex').text(String((tex != 0 ? rex / tex * 100 : 0).toFixed(2)));
+    validateScoreColor($(row).children('.trex'))
+
+    // result_total
+    $(row).children('.rtot').text(String((rsv + rex).toFixed(2)));
+
+    // target_result_total in %
+    $(row).children('.trtot').text(String(((tsv+tex) != 0 ? (rsv + rex) / (tsv + tex) * 100 : 0).toFixed(2)));
+    validateScoreColor($(row).children('.trtot'))
+
+    // Save new targets in database post form
     var url =  window.location.pathname + '/update_target';
     var event_id = $(evt.target).closest('.collapse').attr('id').slice(-1);
-    var data = {event_id: event_id, apparatus_id: apparatus, tsv: tsv, tex: tex, rsv: rsv, rex: rex};
+    var apparatus_id = $(evt.target).parent().attr('class').split(' ')[1];
+    var data = {event_id: event_id, apparatus_id: apparatus_id, tsv: tsv, tex: tex, rsv: rsv, rex: rex};
     $.post(url, data);
+  });
+
+  $(document).ready(function() {
+    $('tr.apparatus > td[contenteditable]').trigger('blur');
   });
 
 
