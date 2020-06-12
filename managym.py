@@ -1,6 +1,6 @@
 from app import create_app, db
 from app.models import User, Athlete, Apparatus, Event, Group, TargetResults, \
-					   Role, Permission
+					   Role, Permission, Information, TypeInformation
 
 app = create_app()
 
@@ -8,5 +8,6 @@ app = create_app()
 @app.shell_context_processor
 def make_shell_context():
 	return {'db': db, 'User': User, 'Athlete': Athlete, 'Apparatus': Apparatus, 'Event': Event, 'Group': Group, \
-			'TargetResults': TargetResults, 'Role': Role, 'Permission': Permission}
+			'TargetResults': TargetResults, 'Role': Role, 'Permission': Permission, 'Information': Information, \
+			'TypeInformation': TypeInformation}
 

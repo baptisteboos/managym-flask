@@ -4,9 +4,9 @@ from flask_babel import _, get_locale
 
 from app import db
 from app.athlete import bp
-from app.models import Athlete, Group, TargetResults, Permission, Event
+from app.models import Athlete, Group, TargetResults, Permission, Event, Information
 from app.athlete.forms import AthleteRegisterForm, AthleteEditForm, EmptyForm,\
-    SearchForm, NewTargetResultsForm
+    SearchForm, NewTargetResultsForm, InformationForm
 from app.decorators import permission_required
 
 @bp.route('/register', methods=['GET', 'POST'])
@@ -41,7 +41,7 @@ def athletes():
         next_url=next_url, prev_url=prev_url, form=form)
 
 
-@bp.route('/<int:id>')
+@bp.route('/<int:id>', methods=['GET', 'POST'])
 @login_required
 @permission_required(Permission.READ)
 def athlete(id):
@@ -58,10 +58,17 @@ def athlete(id):
     # Event that an athlete has not target/resuts
     events = query.filter(~Event.id.in_(subquery)).all()
 
-    form = NewTargetResultsForm()
-    form.set_choices(events)
-    return render_template('athlete/athlete.html', athlete=athlete, form=form, \
-        events_participated=events_participated)
+    target_form = NewTargetResultsForm()
+    target_form.set_choices(events)
+    information_form = InformationForm()
+    if information_form.validate_on_submit():
+        TYPE_ID = 1
+        info = Information(body=information_form.information.data, user_id=current_user.id, type_id=TYPE_ID)
+        athlete.informations.append(info)
+        db.session.commit()
+        return redirect(url_for('athlete.athlete', id=id))
+    return render_template('athlete/athlete.html', athlete=athlete, target_form=target_form, \
+        information_form=information_form, events_participated=events_participated)
 
 @bp.route('/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
@@ -138,7 +145,6 @@ def search():
     athletes = Athlete.query.filter((Athlete.first_name.like(search)) | \
         (Athlete.last_name.like(search))).order_by(Athlete.last_name).\
         paginate(page, current_app.config['ATHLETES_PER_PAGE'], False)
-    print(athletes.items)
     next_url = url_for('athlete.search', q=search, page=athletes.next_num) \
         if athletes.has_next else None
     prev_url = url_for('athlete.search', q=search, page=athletes.prev_num) \

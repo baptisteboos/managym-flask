@@ -2,6 +2,7 @@ import os
 import base64
 from hashlib import md5
 from time import time
+from datetime import datetime
 
 import jwt
 from flask import current_app
@@ -41,6 +42,7 @@ class User(UserMixin, db.Model):
                         db.ForeignKey('roles.id'))
     groups = db.relationship('Group', secondary=user_group, 
         lazy='dynamic', backref=db.backref('users', lazy='dynamic'))
+    informations = db.relationship('Information', backref='author', lazy='dynamic')
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -226,6 +228,7 @@ class Athlete(db.Model):
     # target_results return a query with lazy='dynamic', can apply additional SQL filters
     # /!\ the reverse 'TargetResults.athlete' return an object Athlete
     target_results = db.relationship('TargetResults', backref='athlete', lazy='dynamic')
+    informations = db.relationship('Information', backref='athlete', lazy='dynamic')
 
     def __repr__(self):
         return f'<Athlete {self.first_name} {self.last_name}>'
@@ -311,13 +314,35 @@ class Apparatus(db.Model):
     def __repr__(self):
         return f'<Name {self.name}>'
 
-# class TargetScore():
-#     def __init__(self, target_sv, target_ex, result_sv, result_ex):
-#         self.target_sv = target_sv
-#         self.target_ex = target_ex
-#         self.result_sv = result_sv
-#         self.result_ex = result_ex
+class Information(db.Model):
+    id = db.Column(db.Integer,
+                   primary_key=True)
+    body = db.Column(db.Text,
+                 unique=False,
+                 nullable=True)
+    timestamp = db.Column(db.DateTime,
+                          index=True, 
+                          default=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    athlete_id = db.Column(db.Integer, db.ForeignKey('athlete.id'))
+    type_id = db.Column(db.Integer, db.ForeignKey('type_information.id'))
 
-#     @staticmethod
-#     def target_total(self):
-#         return self.target_sv + self.target_ex
+    def __repr__(self):
+        return f'<Info {self.body}>'
+
+class TypeInformation(db.Model):
+    """docstring for TypeInformation"""
+    __tablename__ = 'type_information'
+
+    id = db.Column(db.Integer,
+                   primary_key=True)
+    name = db.Column(db.String(64),
+                     index=False,
+                     unique=True,
+                     nullable=False)
+    messages = db.relationship('Information', backref='type', lazy='dynamic')
+
+    def __repr__(self):
+        return f'<Type {self.name}>'
+        
+

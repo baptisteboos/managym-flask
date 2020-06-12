@@ -1,6 +1,8 @@
 {% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
 
 {% block app_content %}
+  <!-- Profile of the athlete -->
   <table class="table">
     <tr>
       <td width="192px">
@@ -17,43 +19,28 @@
       </td>
     </tr>
   </table>
-  <h3>{{ _('Targets') }}</h3> 
-  <p>
-  <form action="{{ url_for('athlete.athlete_new_target', id=athlete.id) }}" method="post">
-    {{ form.hidden_tag() }}
-    {{ form.event }}
-    {{ form.submit(value=_('Add a new target/results table'), class='btn btn-default') }}
-  </form>
-  </p>
-  {% if not athlete.target_results.all() %}
-  <h4>{{ _('No target for this athlete') }}</h4>
-  {% else %}
-  <div class="accordion" id="accordionTargetResults">
-    {% for event in events_participated %}
-    <div class="card">
-      <div class="card-header" id="headingEvent{{ event.id }}">
-        <h2 class="mb-0">
-          <button class="btn btn-link text-left" type="button" data-toggle="collapse" data-target="#collapseEvent{{ event.id }}" 
-          aria-expanded="alse" aria-controls="collapseEvent{{ event.id }}">
-            {{ event.name }}
-          </button>
-        </h2>
-      </div>
 
-      <div id="collapseEvent{{ event.id }}" class="collapse" aria-labelledby="headingEvent{{ event.id }}" data-parent="#accordionTargetResults">
-        <div class="card-body">
-          {% include "athlete/_target.html" %}  
-          <p>
-            <form action="{{ url_for('athlete.athlete_delete_target', id=athlete.id, event=event.id) }}" method="post">
-              {{ form.hidden_tag() }}
-              {{ form.submit(value=_('Delete the target/results table'), class='btn btn-danger') }}
-            </form>
-          </p>
-
-        </div>
-      </div>
+  <!-- Nav tab -->
+  <ul class="nav nav-tabs" id="athlete-tabs" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link" id="targets-tab" data-toggle="tab" href="#targets-content" role="tab" aria-controls="targets" aria-selected="false">Targets</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="injuries-tab" data-toggle="tab" href="#injuries-content" role="tab" aria-controls="injuries" aria-selected="false">Injuries</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="comments-tab" data-toggle="tab" href="#comments-content" role="tab" aria-controls="comments" aria-selected="false">Comments</a>
+    </li>
+  </ul>
+  <div class="tab-content" id="athlete-tabsContent">
+    <div class="tab-pane fade show active" id="targets-content" role="tabpanel" aria-labelledby="targets-tab">
+      {% include "athlete/_content_target_tab.html" %}
     </div>
-    {% endfor %}
+    <div class="tab-pane fade" id="injuries-content" role="tabpanel" aria-labelledby="injuries-tab">
+      {% include "athlete/_content_injuries_tab.html" %}
+    </div>
+    <div class="tab-pane fade" id="comments-content" role="tabpanel" aria-labelledby="comments-tab">
+       {# {% include "" %} #}
+    </div>
   </div>
-  {% endif %}
 {% endblock %}

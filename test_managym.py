@@ -2,7 +2,7 @@ from datetime import date
 import jwt
 import pytest
 from app import create_app, db
-from app.models import User, Athlete, Apparel, Event, TargetResults
+from app.models import User, Athlete, Apparatus, Event, TargetResults
 from config import Config
 
 class TestConfig(Config):
@@ -50,12 +50,12 @@ class TestTargetResultsModel:
 		db.session.add_all([at1, at2])
 		db.session.commit()
 
-		ap1 = Apparel(short_name='FX', name='floor exercice')
-		ap2 = Apparel(short_name='PH', name='pommel horse')
-		ap3 = Apparel(short_name='SR', name='still rings')
-		ap4 = Apparel(short_name='VT', name='vault')
-		ap5 = Apparel(short_name='PB', name='parallel bars')
-		ap6 = Apparel(short_name='HB', name='high bar')
+		ap1 = Apparatus(short_name='FX', name='floor exercice')
+		ap2 = Apparatus(short_name='PH', name='pommel horse')
+		ap3 = Apparatus(short_name='SR', name='still rings')
+		ap4 = Apparatus(short_name='VT', name='vault')
+		ap5 = Apparatus(short_name='PB', name='parallel bars')
+		ap6 = Apparatus(short_name='HB', name='high bar')
 		db.session.add_all([ap1, ap2, ap3, ap4, ap5, ap6])
 		db.session.commit()
 
@@ -63,13 +63,13 @@ class TestTargetResultsModel:
 		db.session.add(ev)
 		db.session.commit()
 
-		tg1 = TargetResults(athlete_id=1, apparel_id=1, event_id=1, \
+		tg1 = TargetResults(athlete_id=1, apparatus_id=1, event_id=1, \
 							target_sv=5.0, target_ex=8.5, \
 							result_sv=4.5, result_ex=9.0)
-		tg2 = TargetResults(athlete_id=1, apparel_id=5, event_id=1, \
+		tg2 = TargetResults(athlete_id=1, apparatus_id=5, event_id=1, \
 							target_sv=4.5, target_ex=9.5, \
 							result_sv=4.5, result_ex=9.3)
-		tg3 = TargetResults(athlete_id=2, apparel_id=1, event_id=1, \
+		tg3 = TargetResults(athlete_id=2, apparatus_id=1, event_id=1, \
 							target_sv=6.5, target_ex=9.0, \
 							result_sv=6.5, result_ex=7.0)
 		db.session.add_all([tg1, tg2, tg3])

@@ -1,7 +1,7 @@
 from flask import request
 from flask_wtf import FlaskForm
 from flask_babel import _, lazy_gettext as _l
-from wtforms import StringField, RadioField, SubmitField, SelectField
+from wtforms import StringField, RadioField, SubmitField, SelectField, TextAreaField
 from wtforms.validators import DataRequired, Email, Length
 from wtforms.fields.html5 import DateField
 
@@ -46,3 +46,7 @@ class SearchForm(FlaskForm):
         if 'csrf_enabled' not in kwargs:
             kwargs['csrf_enabled'] = False
         super(SearchForm, self).__init__(*args, **kwargs)
+
+class InformationForm(FlaskForm):
+    information = TextAreaField(_l('Write something'), validators=[DataRequired()])
+    submit = SubmitField(_l('Submit'))

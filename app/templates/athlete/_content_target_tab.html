@@ -1,0 +1,38 @@
+<p>
+  <form action="{{ url_for('athlete.athlete_new_target', id=athlete.id) }}" method="post">
+    {{ target_form.hidden_tag() }}
+    {{ target_form.event }}
+    {{ target_form.submit(value=_('Add a new target/results table'), class='btn btn-default') }}
+  </form>
+</p>
+{% if not athlete.target_results.all() %}
+<h4>{{ _('No target for this athlete') }}</h4>
+{% else %}
+<div class="accordion" id="accordionTargetResults">
+  {% for event in events_participated %}
+  <div class="card">
+    <div class="card-header" id="headingEvent{{ event.id }}">
+      <h2 class="mb-0">
+        <button class="btn btn-link text-left" type="button" data-toggle="collapse" data-target="#collapseEvent{{ event.id }}" 
+        aria-expanded="alse" aria-controls="collapseEvent{{ event.id }}">
+          {{ event.name }}
+        </button>
+      </h2>
+    </div>
+
+    <div id="collapseEvent{{ event.id }}" class="collapse" aria-labelledby="headingEvent{{ event.id }}" data-parent="#accordionTargetResults">
+      <div class="card-body">
+        {% include "athlete/_target_table.html" %}  
+        <p>
+          <form action="{{ url_for('athlete.athlete_delete_target', id=athlete.id, event=event.id) }}" method="post">
+            {{ target_form.hidden_tag() }}
+            {{ target_form.submit(value=_('Delete the target/results table'), class='btn btn-danger') }}
+          </form>
+        </p>
+
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+      {% endif %}

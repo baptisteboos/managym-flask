@@ -61,7 +61,7 @@
     }
   }
 
-  $('[contenteditable]').on('blur', evt => {
+  function handlerTargetResults (evt, init=false) { 
     if (!$(evt.target).text().match(/^[0-9]*\.?[0-9]*$/)) {
       $(evt.target).text('0');
     }
@@ -92,19 +92,23 @@
     $(row).children('.trtot').text(String(((tsv+tex) != 0 ? (rsv + rex) / (tsv + tex) * 100 : 0).toFixed(2)));
     validateScoreColor($(row).children('.trtot'))
 
-    // Save new targets in database post form
-    var url =  window.location.pathname + '/update_target';
-    var event_id = $(evt.target).closest('.collapse').attr('id').slice(-1);
-    var apparatus_id = $(evt.target).parent().attr('class').split(' ')[1];
-    var data = {event_id: event_id, apparatus_id: apparatus_id, tsv: tsv, tex: tex, rsv: rsv, rex: rex};
-    $.post(url, data);
+    if (!init) {
+      // Save new targets in database post form
+      var url =  window.location.pathname + '/update_target';
+      var event_id = $(evt.target).closest('.collapse').attr('id').slice(-1);
+      var apparatus_id = $(evt.target).parent().attr('class').split(' ')[1];
+      var data = {event_id: event_id, apparatus_id: apparatus_id, tsv: tsv, tex: tex, rsv: rsv, rex: rex};
+      $.post(url, data);
+    }
+  }
+
+  $('[contenteditable]').on('blur', evt => {
+    handlerTargetResults(evt);
   });
 
-  $(document).ready(function() {
-    $('tr.apparatus > td[contenteditable]').trigger('blur');
-  });
-
-
+  // $(document).ready(function() {
+  //   $('tr.apparatus > td[contenteditable]').trigger('blur');
+  // });
   </script>
 
 {% endblock %}
