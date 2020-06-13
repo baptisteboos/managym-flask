@@ -1,0 +1,10 @@
+<table class="table table-hover">
+  <tr>
+    <td>
+        {{ information.author.first_name }} {{ information.author.last_name }}
+      - {{ moment(information.timestamp).format('LL') }}:
+      <br>
+      {{ information.body }}
+    </td>
+  </tr>
+</table>
