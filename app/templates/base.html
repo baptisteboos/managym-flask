@@ -51,23 +51,30 @@
   {{ moment.lang(g.locale) }}
   <script>
 
-  function validateScoreColor(elem) {
-    if (parseFloat($(elem).text()) >= 90) {
-      $(elem).css('color', 'green').css('font-weight', 'bold');
-    } else if (parseFloat($(elem).text()) < 80) {
-      $(elem).css('color', 'red').css('font-weight', 'bold');
+  /**
+   * validateScoreColor takes one element and add css color:
+   * green:  if elem >= 90(%)
+   * yellow: if 80 <= elem < 90 
+   * red:    if 80 > elem
+   * @param selector - Jquery selector, one cell in our table
+   */
+  function validateScoreColor(selector) {
+    if (parseFloat($(selector).text()) >= 90) {
+      $(selector).css('color', 'green').css('font-weight', 'bold');
+    } else if (parseFloat($(selector).text()) < 80) {
+      $(selector).css('color', 'red').css('font-weight', 'bold');
     } else {
-      $(elem).css('color', '#b9b226').css('font-weight', 'bold');
+      $(selector).css('color', '#b9b226').css('font-weight', 'bold');
     }
   }
 
-  function handlerTargetResults (evt, init=false) { 
-    if (!$(evt.target).text().match(/^[0-9]*\.?[0-9]*$/)) {
-      $(evt.target).text('0');
+  function handlerTargetResults (selector, init=false) { 
+    if (!$(selector).text().match(/^[0-9]*\.?[0-9]*$/)) {
+    $(selector).text('0');
     }
 
-    // Convert number in cells in float
-    var row = $(evt.target).parent()
+    // // Convert number in cells in float
+    var row = $(selector).parent();
     var tsv = parseFloat($(row).children('.tsv').text());   // target_start_value
     var tex = parseFloat($(row).children('.tex').text());   // target_execution
     var rsv = parseFloat($(row).children('.rsv').text());   // result_start_value
@@ -95,20 +102,32 @@
     if (!init) {
       // Save new targets in database post form
       var url =  window.location.pathname + '/update_target';
-      var event_id = $(evt.target).closest('.collapse').attr('id').slice(-1);
-      var apparatus_id = $(evt.target).parent().attr('class').split(' ')[1];
+      var event_id = $(selector).closest('.collapse').attr('id').slice(-1);
+      var apparatus_id = $(selector).parent().attr('class').split(' ')[1];
       var data = {event_id: event_id, apparatus_id: apparatus_id, tsv: tsv, tex: tex, rsv: rsv, rex: rex};
       $.post(url, data);
     }
   }
 
-  $('[contenteditable]').on('blur', evt => {
-    handlerTargetResults(evt);
-  });
 
-  // $(document).ready(function() {
-  //   $('tr.apparatus > td[contenteditable]').trigger('blur');
-  // });
+  $(document).ready(function() {
+    // Start with target tab open on athlete profile
+    $('#athlete-tabs a[href="#targets-content"]').tab('show')
+
+    // Load the value of target/results table when click on button (no request)
+    $('#accordionTargetResults button').on('click', evt => {
+      var id_content = $(evt.target).attr('aria-controls');
+      $('#'+id_content+'>.card-body tr.apparatus').each(function() {
+        handlerTargetResults($(this).children('td[contenteditable]').first(), init=true);
+      });
+    });
+
+    // Everytime we change a cell of the table we save it in db and recalculate the row
+    $('[contenteditable]').on('blur', evt => {
+      handlerTargetResults($(evt.target));
+    });
+  })
+
   </script>
 
 {% endblock %}
