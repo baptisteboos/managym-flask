@@ -20,7 +20,6 @@ def before_request():
 @login_required
 def index():
     athletes = current_user.athletes_in_groups().all()
-    print(athletes[0].birth_date)
     return render_template('index.html', user=current_user, title=_('index'), athletes=athletes)
 
 @bp.route('/admin')

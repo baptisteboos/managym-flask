@@ -21,10 +21,13 @@
 	        <th scope="col" class="text-center">{{ _('Date of birth') }}</th>
 	        <th scope="col" class="text-center">{{ _('Phone') }}</th>
 	        <th scope="col" class="text-center">{{ _('Group') }}</th>
+	        {% if current_user.can(Permission.CREATE) %}
 	        <th scope="col" class="text-right">
 	        	<button type="button" class="btn btn-primary" onclick="location.href='{{ url_for('athlete.athlete_register') }}'">
-							<span class="glyphicon glyphicon-plus"> {{ _('Add new	') }}</span></button>
+							<span class="glyphicon glyphicon-plus"> {{ _('Add new	') }}</span>
+						</button>
 					</th>
+	        {% endif %}
 	      </tr>
 	    </thead>
 	    <tbody>
