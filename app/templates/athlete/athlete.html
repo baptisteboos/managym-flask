@@ -15,7 +15,8 @@
         {% if athlete.group %}
         <p>{{ _('Group: ') }}<b>{{ athlete.group.name }}</b></p>
         {% endif %}
-        {% if current_user.can(Permission.EDIT) %}
+        {% if current_user.is_administrator() or 
+              current_user.can(Permission.EDIT) and athlete in current_user.athletes_in_groups() %}
         <p><a href="{{ url_for('athlete.athlete_edit', id=athlete.id) }}">{{ _('Edit athlete') }}</a></p> 
         {% endif %}
       </td>
