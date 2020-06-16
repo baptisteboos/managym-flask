@@ -234,7 +234,7 @@ class Athlete(db.Model):
                            index=False,
                            unique=False,
                            nullable=False)
-    adress = db.Column(db.String(64),
+    address = db.Column(db.String(64),
                        index=False,
                        unique=False,
                        nullable=True)
@@ -249,7 +249,7 @@ class Athlete(db.Model):
     postal_code = db.Column(db.String(10),
                             index=False,
                             unique=False,
-                            nullable=False)
+                            nullable=True)
     group_id = db.Column(db.Integer,
                          db.ForeignKey('group.id'),
                          nullable=True)

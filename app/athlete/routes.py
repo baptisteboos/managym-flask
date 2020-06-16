@@ -18,8 +18,16 @@ def athlete_register():
     if form.validate_on_submit():
         athlete = Athlete(first_name=form.first_name.data.capitalize(), \
                           last_name=form.last_name.data.capitalize(), \
-                          email=form.email.data, gender=form.gender.data, \
-                          birth_date=form.birth_date.data, group_id=form.group_id.data)
+                          gender=form.gender.data, \
+                          birth_date=form.birth_date.data)
+        athlete.email = form.email.data
+        athlete.email_2 = form.email_2.data
+        athlete.phone_number = form.phone_number.data
+        athlete.phone_number_2 = form.phone_number_2.data
+        athlete.address = form.address.data
+        athlete.city = form.city.data
+        athlete.postal_code = form.postal_code.data
+        athlete.group_id = form.group_id.data
         db.session.add(athlete)
         db.session.commit()
         flash(_('Succesfully athlete added'))
@@ -78,13 +86,35 @@ def athlete_edit(id):
     form = AthleteEditForm()
     form.set_choices()
     if form.validate_on_submit():
+        print('save')
+        athlete.first_name = form.first_name.data.capitalize()
+        athlete.last_name = form.last_name.data.capitalize()
+        athlete.birth_date = form.birth_date.data
+        athlete.gender = form.gender.data
         athlete.email = form.email.data
+        athlete.email_2 = form.email_2.data
+        athlete.phone_number = form.phone_number.data
+        athlete.phone_number_2 = form.phone_number_2.data
+        athlete.address = form.address.data
+        athlete.city = form.city.data
+        athlete.postal_code = form.postal_code.data
         athlete.group_id = form.group_id.data
         db.session.commit()
         flash(_('Your changes have been saved.'))
         return redirect(url_for('athlete.athlete', id=id))
     elif request.method == 'GET':
+        form.first_name.data = athlete.first_name
+        form.last_name.data = athlete.last_name
+        form.birth_date.data = athlete.birth_date
+        form.gender.data = athlete.gender
         form.email.data = athlete.email
+        form.email_2.data = athlete.email_2
+        form.phone_number.data = athlete.phone_number
+        form.phone_number_2.data = athlete.phone_number_2
+        form.address.data = athlete.address
+        form.city.data = athlete.city
+        form.postal_code.data = athlete.postal_code
+        form.group_id.data = athlete.group_id
     return render_template('athlete/athlete_edit.html', title=_('Edit athlete'), form=form)
 
 @bp.route('/<int:id>/new_target', methods=['POST'])
