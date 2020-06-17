@@ -34,6 +34,21 @@
 				<td class="trtot active"></td>
 			</tr>
 			{% endfor %}
+			{% if athlete.events.filter_by(event_id=event.id).first() %}
+			{% set total_event = athlete.events.filter_by(event_id=event.id).first() %}
+			<tr class="total-event active">
+				<th>{{ _('Total') }}</th>
+				<td colspan="2" class="text-right">
+{# 					<button type="button" class="btn btn-link btn-xs" onclick="	">
+						{{ _('Calculate') }}
+					</button> #}
+				</td>
+				<td class="target-total" contenteditable="True">{{ total_event.target_total }}</td>
+				<td colspan="4"></td>
+				<td class="result-total">{{ total_event.result_total }}</td>
+				<td class="target-result-total"></td>
+			</tr>	
+			{% endif %}
 		</tbody>
 	</table>
 </div>

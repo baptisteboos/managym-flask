@@ -73,7 +73,7 @@
     $(selector).text('0');
     }
 
-    // // Convert number in cells in float
+    // // Convert number from cells in float
     var row = $(selector).parent();
     var tsv = parseFloat($(row).children('.tsv').text());   // target_start_value
     var tex = parseFloat($(row).children('.tex').text());   // target_execution
@@ -99,12 +99,32 @@
     $(row).children('.trtot').text(String(((tsv+tex) != 0 ? (rsv + rex) / (tsv + tex) * 100 : 0).toFixed(2)));
     validateScoreColor($(row).children('.trtot'))
 
+
+    // Total result event (last line)
+    var tbody = $(selector).closest('tbody');
+    var result = 0;
+    var target = 0;
+
+    $(tbody).find('td.rtot').each(function() {
+      result += parseFloat( $(this).text() );
+    });
+    $(tbody).find('td.result-total').text(String(result.toFixed(2)));
+
+    $(tbody).find('td.ttot').each(function() {
+      target += parseFloat( $(this).text() );
+    });
+    $(tbody).find('td.target-total').text(String(target.toFixed(2)));
+
+    var ratio = target ? (result / target) * 100 : 0;
+    $(tbody).find('td.target-result-total').text(String(ratio.toFixed(2)));
+    validateScoreColor($(tbody).find('td.target-result-total'));
+
     if (!init) {
       // Save new targets in database post form
       var url =  window.location.pathname + '/update_target';
-      var event_id = $(selector).closest('.collapse').attr('id').slice(-1);
+      var event_id = $(selector).closest('.collapse').attr('id').slice(13);
       var apparatus_id = $(selector).parent().attr('class').split(' ')[1];
-      var data = {event_id: event_id, apparatus_id: apparatus_id, tsv: tsv, tex: tex, rsv: rsv, rex: rex};
+      var data = {event_id: event_id, apparatus_id: apparatus_id, tsv: tsv, tex: tex, rsv: rsv, rex: rex, target:target, result:result};
       $.post(url, data);
     }
   }
@@ -122,8 +142,11 @@
       });
     });
 
+
+
+
     // Everytime we change a cell of the table we save it in db and recalculate the row
-    $('[contenteditable]').on('blur', evt => {
+    $('tr.apparatus>td[contenteditable]').on('blur', evt => {
       handlerTargetResults($(evt.target));
     });
   });

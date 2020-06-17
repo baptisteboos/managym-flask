@@ -4,7 +4,8 @@ from flask_babel import _, get_locale
 
 from app import db
 from app.athlete import bp
-from app.models import Athlete, Group, TargetResults, Permission, Event, Information
+from app.models import Athlete, Group, TargetResults, Permission, Event, \
+    Information, AthleteEvent
 from app.athlete.forms import AthleteRegisterForm, AthleteEditForm, EmptyForm,\
     SearchForm, NewTargetResultsForm, InformationForm
 from app.decorators import permission_required
@@ -126,6 +127,9 @@ def athlete_new_target(id):
     if form.validate_on_submit():
         athlete = Athlete.query.get_or_404(id)
         athlete.new_target_results(event_id=event_id)
+        athlete_event = AthleteEvent(athlete_id=id, event_id=event_id,
+                                     target_total=0, result_total=0)
+        db.session.add(athlete_event)
         db.session.commit()
         flash(_('New target create.'))
         return redirect(url_for('athlete.athlete', id=id))     
@@ -143,6 +147,7 @@ def athlete_delete_target(id):
         athlete = Athlete.query.get_or_404(id)
         if athlete.target_results.all():
             athlete.delete_target_results(event_id=event_id)
+            athlete.events.filter_by(event_id=event_id).delete()
             db.session.commit()
             flash(_('Target deleted.'))
             return redirect(url_for('athlete.athlete', id=id))
@@ -160,6 +165,12 @@ def athlete_update_target(id):
     target_result.target_ex = request.form['tex']
     target_result.result_sv = request.form['rsv']
     target_result.result_ex = request.form['rex']
+
+    athlete_event = AthleteEvent.query.filter_by(athlete_id=id, \
+                                                 event_id=event_id).first()
+    athlete_event.target_total = request.form['target']
+    athlete_event.result_total = request.form['result']
+
     db.session.commit()
     return redirect(url_for('athlete.athlete', id=id))
 

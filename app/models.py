@@ -16,7 +16,6 @@ user_group = db.Table('user_group',
     db.Column('group_id', db.Integer, db.ForeignKey('group.id'))
 )
 
-
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, 
                    primary_key=True)
@@ -85,18 +84,6 @@ class User(UserMixin, db.Model):
             user_group.c.user_id == self.id).order_by(Athlete.last_name)
 
 
-@login.user_loader
-def load_user(id):
-  return User.query.get(int(id))
-
-class Permission:
-    READ = 0x01
-    EDIT = 0x02
-    CREATE = 0x04
-    DELETE = 0x08
-    ADMINISTER = 0x80
-
-
 class Role(db.Model):
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
@@ -129,7 +116,6 @@ class Role(db.Model):
             role.default = roles[r][1]
             db.session.add(role)
         db.session.commit()
-
 
 
 class TargetResults(db.Model):
@@ -187,6 +173,7 @@ class TargetResults(db.Model):
         if (self.target_sv + self.target_ex) != 0:
             return round((self.result_sv + self.result_ex) / (self.target_sv + self.target_ex) * 100, 2)
         return 0
+
 
 class Group(db.Model):
     id = db.Column(db.Integer,
@@ -257,6 +244,7 @@ class Athlete(db.Model):
     # /!\ the reverse 'TargetResults.athlete' return an object Athlete
     target_results = db.relationship('TargetResults', backref='athlete', lazy='dynamic')
     informations = db.relationship('Information', backref='athlete', lazy='dynamic')
+    events = db.relationship('AthleteEvent', backref='athlete', lazy='dynamic')
 
     def __repr__(self):
         return f'<Athlete {self.first_name} {self.last_name}>'
@@ -297,6 +285,7 @@ class Athlete(db.Model):
     def delete_target_results(self, event_id):
         TargetResults.query.filter_by(athlete_id=self.id, event_id=event_id).delete()
 
+
 class Event(db.Model):
     id = db.Column(db.Integer, 
                    primary_key=True)
@@ -322,6 +311,7 @@ class Event(db.Model):
     # target_results return a query with lazy='dynamic', can apply additional SQL filters
     # /!\ the reverse 'TargetResults.event' return an object Event
     target_results = db.relationship('TargetResults', backref='event', lazy='dynamic')
+    athletes = db.relationship('AthleteEvent', backref='event', lazy='dynamic')
 
     def __repr__(self):
         return f'<Event {self.name}>'
@@ -342,6 +332,27 @@ class Apparatus(db.Model):
     def __repr__(self):
         return f'<Name {self.name}>'
 
+
+class AthleteEvent(db.Model):
+    """docstring for AthleteEvent"""
+    __tablename__ = "athlete_event"
+    id = db.Column(db.Integer, 
+                   primary_key=True)
+    athlete_id = db.Column(db.Integer, 
+                           db.ForeignKey('athlete.id'),
+                           nullable=False)
+    event_id = db.Column(db.Integer,
+                         db.ForeignKey('event.id'),
+                         nullable=False)
+    target_total = db.Column(db.Float,
+                             nullable=True)    
+    result_total = db.Column(db.Float,
+                             nullable=True)    
+
+    def __repr__(self):
+        return f'<AthleteEvent: athtlete: {self.athlete_id}, event: {self.event_id}>'
+
+
 class Information(db.Model):
     id = db.Column(db.Integer,
                    primary_key=True)
@@ -358,6 +369,7 @@ class Information(db.Model):
     def __repr__(self):
         return f'<Info {self.body}>'
 
+
 class TypeInformation(db.Model):
     """docstring for TypeInformation"""
     __tablename__ = 'type_information'
@@ -372,5 +384,16 @@ class TypeInformation(db.Model):
 
     def __repr__(self):
         return f'<Type {self.name}>'
+
+
+class Permission:
+    READ = 0x01
+    EDIT = 0x02
+    CREATE = 0x04
+    DELETE = 0x08
+    ADMINISTER = 0x80
         
 
+@login.user_loader
+def load_user(id):
+  return User.query.get(int(id))
