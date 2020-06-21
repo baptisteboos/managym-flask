@@ -3,25 +3,55 @@
 
 {% block app_content %}
   <!-- Profile of the athlete -->
-  <table class="table">
-    <tr>
-      <td width="192px">
-        <img src="{{ athlete.picture(128) }}">
-      </td>
-      <td>
-        <h1>{{ athlete.first_name + ' ' + athlete.last_name }}</h1>
-        <p>{{ _('Date of birth: ') }}<b>{{ moment(athlete.birth_date).format('L') }}</b></p>
-        {% if athlete.email %}<p>{{ athlete.email }}</p>{% endif %}
-        {% if athlete.group %}
-        <p>{{ _('Group: ') }}<b>{{ athlete.group.name }}</b></p>
-        {% endif %}
-        {% if current_user.is_administrator() or 
-              current_user.can(Permission.EDIT) and athlete in current_user.athletes_in_groups() %}
-        <p><a href="{{ url_for('athlete.athlete_edit', id=athlete.id) }}">{{ _('Edit athlete') }}</a></p> 
-        {% endif %}
-      </td>
-    </tr>
-  </table>
+  <div class="col-md-3">
+    <img src="{{ athlete.picture(192) }}"> 
+  </div>
+  <div class="col-md-9">
+    <table class="table table-condensed ">
+      <tr>
+        <td colspan="2">
+            <h1>{{ athlete.first_name + ' ' + athlete.last_name }}</h1>
+        </td>
+      </tr>
+      <tr>
+        <td>
+            {{ _('Date of birth: ') }}<b>{{ athlete.birth_date.strftime("%Y-%m-%d") }}</b>
+        </td>
+        <td>
+            {{ _('Gender: ') }}<b>{{ 'male' if athlete.gender == '1' else 'female' }}</b>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          {{ _('Phone number 1: ') }}<b>{{ athlete.phone_number }}</b>
+        </td>
+        <td>
+          {{ _('Email 1: ') }}<b>{{ athlete.email }}</b>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          {{ _('Phone number 2: ') }}<b>{{ athlete.phone_number_2 }}</b>
+        </td>
+        <td>
+          {{ _('Email 2: ') }}<b>{{ athlete.email_2 }}</b>
+        </td>
+      </tr>
+      {% if athlete.group %}
+      <tr>
+        <td colspan="2">
+          {{ _('Group: ') }}<b>{{ athlete.group.name }}</b>
+        </td>
+      {% endif %}
+      </tr>
+    </table>
+    <p>
+    {% if current_user.is_administrator() or 
+          current_user.can(Permission.EDIT) and athlete in current_user.athletes_in_groups() %}
+    <a href="{{ url_for('athlete.athlete_edit', id=athlete.id) }}">{{ _('Edit athlete') }}</a>
+    {% endif %}
+    </p>
+  </div>
 
   <!-- Nav tab -->
   <ul class="nav nav-tabs" id="athlete-tabs" role="tablist">

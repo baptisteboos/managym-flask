@@ -2,7 +2,7 @@
   <form action="{{ url_for('athlete.athlete_new_target', id=athlete.id) }}" method="post">
     {{ target_form.hidden_tag() }}
     {{ target_form.event }}
-    {{ target_form.submit(value=_('Add a new target/results table'), class='btn btn-default') }}
+    {{ target_form.submit(value=_('Add a new target'), class='btn btn-primary') }}
   </form>
 </p>
 {% if not athlete.target_results.all() %}
