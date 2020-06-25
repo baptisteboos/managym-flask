@@ -174,6 +174,27 @@ def athlete_update_target(id):
     db.session.commit()
     return redirect(url_for('athlete.athlete', id=id))
 
+@bp.route('/<int:id>/graphs')
+@login_required
+def athlete_target_graphs(id):
+    labels = [
+        '1st Quebec Cup',
+        '2nd Quebec cup',
+        '3rd Quebec Cup',
+        'final Quebec Cup',
+        'Canadian championship'
+    ]
+    values = [
+        65.34,
+        66.76,
+        67.12,
+        67.15,
+        68.98
+    ]
+    return render_template('athlete/graphs.html', title=_('Graphs'), athlete=athlete, \
+                           labels=labels, values=values)
+
+
 @bp.route('/search')
 @login_required
 @permission_required(Permission.READ)
