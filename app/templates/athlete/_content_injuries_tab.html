@@ -1,7 +1,6 @@
-<br>
-  <div class="col-md-12">
-      {{ wtf.quick_form(information_form) }}
-  </div>
-{% for information in athlete.informations %}
-  {% include "athlete/_information.html" %}  
-{% endfor %}
+<button type="button" class="btn btn-primary btn-lg btn-block" id="btn-add">Add a comment</button>
+<table class="table table-hover" id="tblInjuriesData">
+		{% for information in athlete.informations %}
+		  {% include "athlete/_information.html" %}  
+		{% endfor %}
+</table>

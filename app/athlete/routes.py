@@ -14,6 +14,21 @@ from app.athlete.forms import AthleteRegisterForm, AthleteEditForm, EmptyForm,\
     SearchForm, NewTargetResultsForm, InformationForm
 from app.decorators import permission_required
 
+@bp.route('/')
+@login_required
+@permission_required(Permission.READ)
+def athletes():
+    form = SearchForm()
+    page = request.args.get('page', 1, type=int)
+    athletes = Athlete.query.order_by('last_name').paginate(page, current_app.config['ATHLETES_PER_PAGE'], False)
+    next_url = url_for('athlete.athletes', page=athletes.next_num) \
+        if athletes.has_next else None
+    prev_url = url_for('athlete.athletes', page=athletes.prev_num) \
+        if athletes.has_prev else None
+    return render_template('athlete/athletes.html', title=_('Athlete index'), athletes=athletes.items, \
+        next_url=next_url, prev_url=prev_url, form=form)
+
+
 @bp.route('/register', methods=['GET', 'POST'])
 @login_required
 @permission_required(Permission.CREATE)
@@ -38,20 +53,6 @@ def athlete_register():
         flash(_('Succesfully athlete added'))
         return redirect(url_for('athlete.athletes'))
     return render_template('athlete/athlete_register.html', form=form, title=_('Registration'))
-
-@bp.route('/')
-@login_required
-@permission_required(Permission.READ)
-def athletes():
-    form = SearchForm()
-    page = request.args.get('page', 1, type=int)
-    athletes = Athlete.query.order_by('last_name').paginate(page, current_app.config['ATHLETES_PER_PAGE'], False)
-    next_url = url_for('athlete.athletes', page=athletes.next_num) \
-        if athletes.has_next else None
-    prev_url = url_for('athlete.athletes', page=athletes.prev_num) \
-        if athletes.has_prev else None
-    return render_template('athlete/athletes.html', title=_('Athlete index'), athletes=athletes.items, \
-        next_url=next_url, prev_url=prev_url, form=form)
 
 
 @bp.route('/<int:id>', methods=['GET', 'POST'])
@@ -122,6 +123,7 @@ def athlete_edit(id):
         form.group_id.data = athlete.group_id
     return render_template('athlete/athlete_edit.html', title=_('Edit athlete'), form=form)
 
+
 @bp.route('/<int:id>/new_target', methods=['POST'])
 @login_required
 @permission_required(Permission.CREATE)
@@ -140,6 +142,7 @@ def athlete_new_target(id):
     else:
         return redirect(url_for('athlete.athletes'))
 
+
 @bp.route('/<int:id>/delete_target', methods=['POST'])
 @login_required
 @permission_required(Permission.DELETE)
@@ -156,6 +159,7 @@ def athlete_delete_target(id):
             flash(_('Target deleted.'))
             return redirect(url_for('athlete.athlete', id=id))
     return redirect(url_for('athlete.athletes'))
+
 
 @bp.route('/<int:id>/update_target', methods=['POST'])
 @login_required
@@ -177,6 +181,7 @@ def athlete_update_target(id):
 
     db.session.commit()
     return redirect(url_for('athlete.athlete', id=id))
+
 
 @bp.route('/<int:id>/graph_get_data')
 @login_required
@@ -212,3 +217,28 @@ def search():
     return render_template('athlete/athletes.html', title=_('Search athletes'), athletes=athletes.items, 
         next_url=next_url, prev_url=prev_url, form=form)
         # , posts=posts, next_url=next_url, prev_url=prev_url)
+
+@bp.route('/<int:id>/_add_injury', methods=['POST'])
+@login_required
+@permission_required(Permission.CREATE)
+def add_injuries(id):
+    info = Information(user_id=current_user.id, athlete_id=id, type_id=1)
+    db.session.add(info)
+    db.session.commit()
+    return jsonify({'id': info.id,
+                    'timestamp': info.timestamp,
+                    'author_first_name': info.author.first_name,
+                    'author_last_name': info.author.last_name})
+
+# @bp.route('/<int:id>/_update_injury', methods=['GET', 'POST'])
+# @login_required
+# @permission_required(Permission.EDIT)
+
+@bp.route('/<int:id>/_delete_injury', methods=['POST'])
+@login_required
+@permission_required(Permission.DELETE)
+def delete_injuries(id):
+    Information.query.filter_by(id=request.form['info_id']).delete()
+    db.session.commit()
+    return jsonify({})
+

@@ -125,4 +125,8 @@ $(document).ready(function() {
   $('tr.apparatus>td[contenteditable]').on('blur', evt => {
     handlerTargetResults($(evt.target));
   });
+
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+  });
 });

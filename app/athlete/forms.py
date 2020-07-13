@@ -66,5 +66,5 @@ class SearchForm(FlaskForm):
         super(SearchForm, self).__init__(*args, **kwargs)
 
 class InformationForm(FlaskForm):
-    information = TextAreaField(_l('Write something'), validators=[DataRequired()])
+    information = TextAreaField(_l('Write something'), validators=[DataRequired()]) 
     submit = SubmitField(_l('Submit'))
