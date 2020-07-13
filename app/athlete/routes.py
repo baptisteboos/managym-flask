@@ -1,6 +1,10 @@
-from flask import render_template, url_for, redirect, flash, g, request, current_app
+import json
+
+from flask import render_template, url_for, redirect, flash, g, request, current_app, \
+    jsonify
 from flask_login import current_user, login_required
 from flask_babel import _, get_locale
+from sqlalchemy import func
 
 from app import db
 from app.athlete import bp
@@ -174,25 +178,19 @@ def athlete_update_target(id):
     db.session.commit()
     return redirect(url_for('athlete.athlete', id=id))
 
-@bp.route('/<int:id>/graphs')
+@bp.route('/<int:id>/graph_get_data')
 @login_required
-def athlete_target_graphs(id):
-    labels = [
-        '1st Quebec Cup',
-        '2nd Quebec cup',
-        '3rd Quebec Cup',
-        'final Quebec Cup',
-        'Canadian championship'
-    ]
-    values = [
-        65.34,
-        66.76,
-        67.12,
-        67.15,
-        68.98
-    ]
-    return render_template('athlete/graphs.html', title=_('Graphs'), athlete=athlete, \
-                           labels=labels, values=values)
+def graph_get_data(id):
+    data = db.session.query(AthleteEvent.target_total, AthleteEvent.result_total,\
+            func.round(AthleteEvent.result_total/AthleteEvent.target_total*100, 2),\
+            Event.name).join(Event).filter(AthleteEvent.athlete_id==id).order_by(\
+            Event.date).all()
+    target, result, success, labels = zip(*data)
+
+    return jsonify({'payload':json.dumps({'target':target, \
+                                          'result':result, \
+                                          'success': success, \
+                                          'labels':labels})})
 
 
 @bp.route('/search')

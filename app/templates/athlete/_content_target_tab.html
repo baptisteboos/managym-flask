@@ -1,10 +1,20 @@
-<p>
-  <form action="{{ url_for('athlete.athlete_new_target', id=athlete.id) }}" method="post">
-    {{ target_form.hidden_tag() }}
-    {{ target_form.event }}
-    {{ target_form.submit(value=_('Add a new target'), class='btn btn-primary') }}
-  </form>
-</p>
+<div class="row">
+  <div class="col-xs-6">
+    {% if target_form.event.choices %}
+    <form action="{{ url_for('athlete.athlete_new_target', id=athlete.id) }}" class="form-inline" method="post">
+      {{ target_form.hidden_tag() }}
+      {{ target_form.event(class='form-control') }}
+      {{ target_form.submit(value=_('Add a new target'), class='btn btn-primary') }}
+    </form>
+    {% endif %}
+  </div>
+  {% if athlete.target_results.all() %}
+  <div class="col-xs-6 text-right">
+    <button id="btn-graphs" class="btn btn-info" data-toggle="modal" data-target="#modLineChart">{{ _('Graph of events') }}</button>
+  </div>
+  {% include "athlete/graphs.html" %}
+  {% endif %}
+</div>
 {% if not athlete.target_results.all() %}
 <h4>{{ _('No target for this athlete') }}</h4>
 {% else %}
@@ -35,4 +45,4 @@
   </div>
   {% endfor %}
 </div>
-      {% endif %}
+{% endif %}

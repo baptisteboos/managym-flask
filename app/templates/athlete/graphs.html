@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{# {% extends "base.html" %}
 
 {% block app_content %}
     <h1>{{ title }}</h1>
@@ -11,4 +11,19 @@
     <div class="col-md-12">
       <canvas id="myRadarChart" width="800" height="600">Your browser does not support the canvas element.</canvas>
     </div>
-{% endblock  %}
+{% endblock  %} #}
+<div class="modal fade" id="modLineChart" tabindex="-1" role="dialog" aria-labelledby="modLineChartLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" id="modLineChartLabel">Graph of target / results of all events</h4>
+            </div>
+            <div class="modal-body">
+                <canvas id="myLineChart" width="800" height="450"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
