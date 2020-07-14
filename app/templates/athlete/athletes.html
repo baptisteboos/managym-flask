@@ -1,53 +1,60 @@
 {% extends "base.html" %}
 
 {% block app_content %}
-	<h1>{{ _('Athletes') }}</h1>
-	<div class="col-md-12">
+	<div class="row">
+		<div class="col-md-8">
+			<h1>{{ _('Athletes') }}</h1>	
+		</div>
+		{% if athletes %}
+		<div class="col-md-4">
+			<form method="get" action="{{ url_for('athlete.search') }}">
+			  <div class="form-group">
+					{{ form.q(class='form-control', placeholder=form.q.label.text) }}
+			  </div>
+			</form>
+		</div>
+		{% endif %}
+	</div>	
   {% if athletes %}
-		<form class="col-md-4" method="get" action="{{ url_for('athlete.search') }}">
-		  <div class="form-group">
-			{{ form.q(class='form-control', placeholder=form.q.label.text) }}
-		  </div>
-		</form>
-{# 		<p class="text-right"><a href="{{ url_for('athlete.athlete_register') }}"><button type="button" class="btn btn-success">
-			<span class="glyphicon glyphicon-plus"> {{ _('Athlete') }}</span></button>
-		</a></p> #}
-	  <table class="table table-hover text-center">
-	    <thead class="thead-dark">
-	      <tr>
-	        {# <th scope="col">#</th> #}
-	        <th scope="col" class="text-center">{{ _('First') }}</th>
-	        <th scope="col" class="text-center">{{ _('Last') }}</th>
-	        <th scope="col" class="text-center">{{ _('Date of birth') }}</th>
-	        <th scope="col" class="text-center">{{ _('Phone') }}</th>
-	        <th scope="col" class="text-center">{{ _('Email') }}</th>
-	        <th scope="col" class="text-center">{{ _('Group') }}</th>
-	        {% if current_user.can(Permission.CREATE) %}
-	        <th scope="col" class="text-right">
-	        	<button type="button" class="btn btn-primary" onclick="location.href='{{ url_for('athlete.athlete_register') }}'">
-							<span class="glyphicon glyphicon-plus"> {{ _('Add new	') }}</span>
-						</button>
-					</th>
-	        {% endif %}
-	      </tr>
-	    </thead>
-	    <tbody>
-	    {% for athlete in athletes %}
-	        <tr>
-	          {# <th scope="row">{{ athlete.id }}</th> #}
-	          <td>{{ athlete.first_name }}</td>
-	          <td>{{ athlete.last_name }}</td>
-	          <td>{{ athlete.birth_date.strftime("%Y-%m-%d") }}</td>
-	          <td>{{ athlete.phone_number }}</td>
-	          <td>{{ athlete.email }}</td>
-	          <td>{{ athlete.group.name }}</td>
-	          <td>
-	            <a href="{{ url_for('athlete.athlete', id=athlete.id) }}"><span class="glyphicon glyphicon-user"></span> {{ _('Profile') }}</a>
-	          </td>
-	        </tr>
-	    {% endfor %}
-	    </tbody>
-	  </table>
+	<div class="row">
+		<div class="table-responsive">
+		  <table class="table table-hover text-center">
+		    <thead class="thead-dark">
+		      <tr>
+		        {# <th scope="col">#</th> #}
+		        <th scope="col" class="text-center">{{ _('First') }}</th>
+		        <th scope="col" class="text-center">{{ _('Last') }}</th>
+		        <th scope="col" class="text-center">{{ _('Date of birth') }}</th>
+		        <th scope="col" class="text-center">{{ _('Phone') }}</th>
+		        <th scope="col" class="text-center">{{ _('Email') }}</th>
+		        <th scope="col" class="text-center">{{ _('Group') }}</th>
+		        <th scope="col" class="text-right">
+		        {% if current_user.can(Permission.CREATE) %}
+		        	<button type="button" class="btn btn-primary" onclick="location.href='{{ url_for('athlete.athlete_register') }}'">
+						<span class="glyphicon glyphicon-plus"> {{ _('Add athlete') }}</span>
+					</button>
+		        {% endif %}
+				</th>
+		      </tr>
+		    </thead>
+		    <tbody>
+		    {% for athlete in athletes %}
+		        <tr>
+		          {# <th scope="row">{{ athlete.id }}</th> #}
+		          <td>{{ athlete.first_name }}</td>
+		          <td>{{ athlete.last_name }}</td>
+		          <td>{{ athlete.birth_date.strftime("%Y-%m-%d") }}</td>
+		          <td>{{ athlete.phone_number }}</td>
+		          <td>{{ athlete.email }}</td>
+		          <td>{{ athlete.group.name }}</td>
+		          <td class="text-right">
+		            <a href="{{ url_for('athlete.athlete', id=athlete.id) }}"><span class="glyphicon glyphicon-user"></span> {{ _('Profile') }}</a>
+		          </td>
+		        </tr>
+		    {% endfor %}
+		    </tbody>
+		  </table>
+  	</div>
 	  <nav aria-label="...">
 	  	<ul class="pager">
 	  		<li class="previous{% if not prev_url %} disabled{% endif %}">
@@ -62,14 +69,14 @@
 	  		</li>
 	  	</ul>
 	  </nav>
-  {% else %}
-	  {% if current_user.can(Permission.CREATE) %}
-		<p>
-			<button type="button" class="btn btn-primary" onclick="location.href='{{ url_for('athlete.athlete_register') }}'">
-				<span class="glyphicon glyphicon-plus"> {{ _('Add new	') }}</span>
-			</button>
-		</p>
-		{% endif %}
-  {% endif %}
 	</div>
+  {% elif current_user.can(Permission.CREATE) %}
+	<p>
+		<button type="button" class="btn btn-primary" onclick="location.href='{{ url_for('athlete.athlete_register') }}'">
+			<span class="glyphicon glyphicon-plus"> {{ _('Add new	') }}</span>
+		</button>
+	</p>
+	{% else %}
+	<p>{{ _('No athlete') }}</p>
+	{% endif %}
 {% endblock %}

@@ -313,9 +313,25 @@ class Event(db.Model):
     # /!\ the reverse 'TargetResults.event' return an object Event
     target_results = db.relationship('TargetResults', backref='event', lazy='dynamic')
     athletes = db.relationship('AthleteEvent', backref='event', lazy='dynamic')
+    type_id = db.Column(db.Integer, db.ForeignKey('type_event.id'))
 
     def __repr__(self):
         return f'<Event {self.name}>'
+
+class TypeEvent(db.Model):
+    """docstring for TypeEvent"""
+    __tablename__ = 'type_event'
+    id = db.Column(db.Integer,
+                   primary_key=True)
+    name = db.Column(db.String(64),
+                     index=False,
+                     unique=True,
+                     nullable=False)
+    events = db.relationship('Event', backref='type', lazy='dynamic')
+
+    def __repr__(self):
+        return f'<Type {self.name}>'
+        
 
 
 class Apparatus(db.Model):

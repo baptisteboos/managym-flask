@@ -1,14 +1,9 @@
+
 {% extends "base.html" %}
-{% import 'bootstrap/wtf.html' as wtf %}
 
 {% block app_content %}
-	<h1>{{ _('Register new athlete') }}</h1>
+	<h1>{{ title }}</h1>
 	<hr>
-{# 	<div class="row">
-		<div class="col-md-4">
-			{{ wtf.quick_form(form) }}
-		</div>
-	</div> #}
 	<div class="form-row">
 		<form method="post" action="#">
 			{{ form.hidden_tag() }}

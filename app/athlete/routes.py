@@ -10,8 +10,8 @@ from app import db
 from app.athlete import bp
 from app.models import Athlete, Group, TargetResults, Permission, Event, \
     Information, AthleteEvent
-from app.athlete.forms import AthleteRegisterForm, AthleteEditForm, EmptyForm,\
-    SearchForm, NewTargetResultsForm, InformationForm
+from app.athlete.forms import AthleteForm, EmptyForm,SearchForm, NewTargetResultsForm, \
+    InformationForm
 from app.decorators import permission_required
 
 @bp.route('/')
@@ -33,7 +33,7 @@ def athletes():
 @login_required
 @permission_required(Permission.CREATE)
 def athlete_register():
-    form = AthleteRegisterForm()
+    form = AthleteForm()
     form.set_choices()
     if form.validate_on_submit():
         athlete = Athlete(first_name=form.first_name.data.capitalize(), \
@@ -52,7 +52,7 @@ def athlete_register():
         db.session.commit()
         flash(_('Succesfully athlete added'))
         return redirect(url_for('athlete.athletes'))
-    return render_template('athlete/athlete_register.html', form=form, title=_('Registration'))
+    return render_template('athlete/athlete_register_edit.html', form=form, title=_('Register athlete'))
 
 
 @bp.route('/<int:id>', methods=['GET', 'POST'])
@@ -89,7 +89,7 @@ def athlete(id):
 @permission_required(Permission.EDIT)
 def athlete_edit(id):
     athlete = Athlete.query.get_or_404(id)
-    form = AthleteEditForm()
+    form = AthleteForm()
     form.set_choices()
     if form.validate_on_submit():
         print('save')
@@ -121,7 +121,7 @@ def athlete_edit(id):
         form.city.data = athlete.city
         form.postal_code.data = athlete.postal_code
         form.group_id.data = athlete.group_id
-    return render_template('athlete/athlete_edit.html', title=_('Edit athlete'), form=form)
+    return render_template('athlete/athlete_register_edit.html', title=_('Edit athlete'), form=form)
 
 
 @bp.route('/<int:id>/new_target', methods=['POST'])

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+	<h1>{{ title }}</h1>
+	<hr>
+	<div class="form-row">
+		<form method="post" action="#">
+			{{ form.hidden_tag() }}
+			<div class="row">
+			  <div class="form-group col-md-8">
+			    {{ form.name.label }}
+			    {{ form.name(class="form-control") }}
+			  </div>
+			  <div class="form-group col-md-4">
+			    {{ form.type_id.label }}
+			    {{ form.type_id(class="form-control") }}
+			  </div>
+			</div>
+			<div class="row">
+				<div class="form-group col-md-8">
+					{{ form.place.label }}
+					{{ form.place(class="form-control") }}
+				</div>
+				<div class="form-group col-md-4">
+					{{ form.date.label }}
+					{{ form.date(class="form-control") }}
+				</div>
+			</div>
+			<div class="row">
+				<div class="form-group col-md-10">
+					{{ form.description.label }}
+					{{ form.description(class="form-control") }}
+				</div>
+			</div>
+			{{ form.submit() }}
+		</form>
+	</div>
+{% endblock %}

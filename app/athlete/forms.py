@@ -7,7 +7,7 @@ from wtforms.fields.html5 import DateField
 
 from app.models import Group
 
-class AthleteRegisterForm(FlaskForm):
+class AthleteForm(FlaskForm):
     first_name = StringField(_l('First name'), validators=[DataRequired()])
     last_name = StringField(_l('Last name'), validators=[DataRequired()])
     birth_date = DateField(_l('Date of birth'), format='%Y-%m-%d', validators=[DataRequired()])
@@ -22,25 +22,6 @@ class AthleteRegisterForm(FlaskForm):
     postal_code = StringField(_l('Postal code'))
     group_id = SelectField(_l('Group'), coerce=int)
     submit = SubmitField(_l('Register'))
-
-    def set_choices(self):
-        self.group_id.choices = [(g.id, g.name) for g in Group.query.order_by('name')]
-
-class AthleteEditForm(FlaskForm):
-    first_name = StringField(_l('First name'), validators=[DataRequired()])
-    last_name = StringField(_l('Last name'), validators=[DataRequired()])
-    birth_date = DateField(_l('Date of birth'), format='%Y-%m-%d', validators=[DataRequired()])
-    gender = RadioField(_l('Gender'), choices=[('1', _l('Male')), ('2', _l('Female'))], coerce=str)
-    email = StringField(_l('Email'))
-    email_2 = StringField(_l('Email 2'))
-    phone_number = StringField(_l('Phone number'))
-    phone_number_2 = StringField(_l('Phone number 2'))
-    address = StringField(_l('Address'))
-    city = StringField(_l('City'))
-    province = SelectField(_l('province'), choices=[('QC', 'QC')])
-    postal_code = StringField(_l('Postal code'))
-    group_id = SelectField(_l('Group'), coerce=int)
-    submit = SubmitField(_l('Edit'))
 
     def set_choices(self):
         self.group_id.choices = [(g.id, g.name) for g in Group.query.order_by('name')]

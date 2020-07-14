@@ -1,41 +1,58 @@
 {% extends "base.html" %}
 
 {% block app_content %}
-<h1>{{ _('Events') }}</h1>
-  <div class="col-md-12">
+  <div class="row">
+    <div class="col-md-8">
+      <h1>{{ _('Events') }}</h1>  
+    </div>
+    {% if events %}
+    <div class="col-md-4">
+      {# <form method="get" action="{{ url_for('athlete.search') }}">
+        <div class="form-group">
+          {{ form.q(class='form-control', placeholder=form.q.label.text) }}
+        </div>
+      </form> #}
+    </div>
+    {% endif %}
+  </div>
   {% if events %}
-{#     <form class="col-md-4" method="get" action="{{ url_for('athlete.search') }}">
-      <div class="form-group">
-      {{ form.q(class='form-control', placeholder=form.q.label.text) }}
-      </div>
-    </form> #}
-    <table class="table table-hover text-center">
-      <thead class="thead-dark">
-        <tr>
-          {# <th scope="col">#</th> #}
-          <th scope="col" class="text-center">{{ _('Name') }}</th>
-          <th scope="col" class="text-center">{{ _('Date') }}</th>
-          <th scope="col" class="text-center">{{ _('Place') }}</th>
-          <th scope="col" class="text-right">
-            <button type="button" class="btn btn-primary" onclick="location.href='{{ url_for('main.event_register') }}'">
-              <span class="glyphicon glyphicon-plus"> {{ _('Add new ') }}</span></button>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-      {% for event in events %}
+  <div class="row">
+    <div class="table-responsive">
+      <table class="table table-hover text-center">
+        <thead class="thead-dark">
           <tr>
-            {# <th scope="row">{{ athlete.id }}</th> #}
-            <td>{{ event.name }}</td>
-            <td>{{ event.date.strftime("%Y-%m-%d") }}</td>
-            <td>{{ event.place }}</td>
-            <td>
-              <a href="#"><span class="glyphicon glyphicon-pencil"></span> {{ _('Edit') }}</a>
-            </td>
+            {# <th scope="col">#</th> #}
+            <th scope="col" class="text-center">{{ _('Name') }}</th>
+            <th scope="col" class="text-center">{{ _('Date') }}</th>
+            <th scope="col" class="text-center">{{ _('Place') }}</th>
+            <th scope="col" class="text-center">{{ _('Description') }}</th>
+            <th scope="col" class="text-right">
+            {% if current_user.can(Permission.CREATE) %}
+              <button type="button" class="btn btn-primary" onclick="location.href='{{ url_for('main.event_register') }}'">
+                <span class="glyphicon glyphicon-plus"> {{ _('Add event') }}</span>
+              </button>
+            {% endif %}
+            </th>
           </tr>
-      {% endfor %}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+        {% for event in events %}
+            <tr>
+              {# <th scope="row">{{ athlete.id }}</th> #}
+              <td>{{ event.name }}</td>
+              <td>{{ event.date.strftime("%Y-%m-%d") }}</td>
+              <td>{{ event.place }}</td>
+              <td>{{ event.description }}</td>
+              <td class="text-right">
+                <a href="{{ url_for('main.event', id=event.id) }}">
+                  <span class="glyphicon glyphicon-edit"></span> {{ _('Edit') }}
+                </a>
+              </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
     <nav aria-label="...">
       <ul class="pager">
         <li class="previous{% if not prev_url %} disabled{% endif %}">
@@ -50,6 +67,14 @@
         </li>
       </ul>
     </nav>
+  </div> 
+  {% elif current_user.can(Permission.CREATE) %}
+  <p>
+    <button type="button" class="btn btn-primary" onclick="location.href='{{ url_for('main.event_register') }}'">
+      <span class="glyphicon glyphicon-plus"> {{ _('Add event') }}</span>
+    </button>
+  </p>
+  {% else %}
+  <p>{{ _('No event') }}</p>
   {% endif %}
-  </div>
 {% endblock %}

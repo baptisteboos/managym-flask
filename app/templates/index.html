@@ -5,29 +5,31 @@
   <div class="col-md-6">
     {% if athletes %}
     <br>
-    <table class="table table-hover text-center">
-      <thead class="thead-dark">
-        <tr>
-          <th scope="col" class="text-center">{{ _('First') }}</th>
-          <th scope="col" class="text-center">{{ _('Last') }}</th>
-          <th scope="col" class="text-center">{{ _('Date of birth') }}</th>
-          <th scope="col" class="text-center">{{ _('Phone') }}</th>
-        </tr>
-      </thead>
-      <tbody>
-      {% for athlete in athletes %}
+    <div class="table-responsive">
+      <table class="table table-hover text-center">
+        <thead class="thead-dark">
           <tr>
-            <td>{{ athlete.first_name }}</td>
-            <td>{{ athlete.last_name }}</td>
-            <td>{{ moment(athlete.birth_date).format('L') }}</td>
-            <td></td>
-            <td>
-              <a href="{{ url_for('athlete.athlete', id=athlete.id) }}"><span class="glyphicon glyphicon-user"></span> {{ _('Profile') }}</a>
-            </td>
+            <th scope="col" class="text-center">{{ _('First') }}</th>
+            <th scope="col" class="text-center">{{ _('Last') }}</th>
+            <th scope="col" class="text-center">{{ _('Date of birth') }}</th>
+            <th scope="col" class="text-center">{{ _('Phone') }}</th>
           </tr>
-      {% endfor %}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+        {% for athlete in athletes %}
+            <tr>
+              <td>{{ athlete.first_name }}</td>
+              <td>{{ athlete.last_name }}</td>
+              <td>{{ athlete.birth_date.strftime("%Y-%m-%d") }}</td>
+              <td>{{ athlete.phone_number }}</td>
+              <td>
+                <a href="{{ url_for('athlete.athlete', id=athlete.id) }}"><span class="glyphicon glyphicon-user"></span> {{ _('Profile') }}</a>
+              </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
     {% else %}
     <br>
     <h4>{{ _('You have no athlete in your group') }}</h4>

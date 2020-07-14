@@ -2,7 +2,7 @@ function Add(){
 	var url =  window.location.pathname + '/_add_injury';
 	$.post(url, {
     }).done(function(response) {
-		$('#tblInjuriesData > tbody').prepend(
+		$('#tblInjuriesData >tbody').prepend(
 			"<tr data-info-id='"+response['id']+"'>"+
 			"<td class='col-sm-10'>"+
 			"<p><b>"+
