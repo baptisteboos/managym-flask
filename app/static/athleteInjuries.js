@@ -3,13 +3,14 @@ function Add(){
 	$.post(url, {
     }).done(function(response) {
 		$('#tblInjuriesData > tbody').prepend(
-			"<tr>"+
+			"<tr data-info-id='"+response['id']+"'>"+
 			"<td class='col-sm-10'>"+
-			"<div><b>"+
+			"<p><b>"+
 			response['author_first_name']+" "+response['author_last_name']+" - "+
-			response['timestamp']+":"+
-			"</b></div>"+
-			"<p><textarea class='form-control' rows='3' placeholder='Write something...'></textarea></p>"+
+			moment().format('LL')+":"+
+			"</b></p>"+
+			// "<p contenteditable='true'></p>"+
+			"<div><textarea class='form-control' rows='3' placeholder='Write something...'></textarea></div>"+
 			"</td>"+
 			"<td class='col-sm-1'>"+
 			"<ul class='list-inline'>"+
@@ -24,32 +25,41 @@ function Add(){
 		)
 		$(".btn-save").bind("click", Save);		
 		$(".btn-delete").bind("click", Delete);
-
-    	}).fail(function() {
-                alert('problem with the servor');
-        });
+    }).fail(function() {
+            alert('problem with the server...');
+    });
 
 };	
 
 function Save(){
+	var url =  window.location.pathname + '/_update_injury';
 	var par = $(this).closest('tr'); //tr
-	var tdDataAuhor = par.children("td:nth-child(1)").children('div');
-	var tdDataContent = par.children("td:nth-child(1)").children('p');
+	var tdDataContent = par.children("td:nth-child(1)").children('div');
+	var tdDataAuhor = par.children("td:nth-child(1)").children('p');
 	var tdButtons = par.children("td:nth-child(2)");
+	$.post(url, {
+		info_id: $(par).attr('data-info-id'),
+		// info_body: $(tdDataContent).text()
+		info_body: $(tdDataContent).children('textarea').val()
+    }).done(function(response) {
+		// tdDataContent.attr('contenteditable', 'false');
+		tdDataContent.text(tdDataContent.children('textarea').val());
+		tdButtons.find('li').first().html("<button class='btn btn-success btn-sm rounded-0 btn-edit' type='button' data-toggle='tooltip' data-placement='top' title='Edit'><i class='glyphicon glyphicon-edit'></i></button>");
 
-	tdDataContent.html(tdDataContent.children('textarea').val());
-	tdButtons.find('li').first().html("<button class='btn btn-success btn-sm rounded-0 btn-edit' type='button' data-toggle='tooltip' data-placement='top' title='Edit'><i class='glyphicon glyphicon-edit'></i></button>");
-
-	$(".btn-edit").bind("click", Edit);
-}; 
+		$(".btn-edit").bind("click", Edit);
+	}).fail(function() {
+		alert('problem with the server...');
+	})
+}; 	
 
 function Edit(){
 	var par = $(this).closest('tr'); //tr
-	var tdDataAuhor = par.children("td:nth-child(1)").children('div');
-	var tdDataContent = par.children("td:nth-child(1)").children('p');
+	var tdDataAuhor = par.children("td:nth-child(1)").children('p');
+	var tdDataContent = par.children("td:nth-child(1)").children('div');
 	var tdButtons = par.children("td:nth-child(2)");
 
-	tdDataContent.html("<textarea class='form-control' rows='3'>"+tdDataContent.val()+"</textarea>");
+	// tdDataContent.attr('contenteditable', 'true');
+	tdDataContent.html("<textarea class='form-control' rows='3'>"+tdDataContent.text().trim()+"</textarea>");
 	tdButtons.find('li').first().html("<button class='btn btn-success btn-sm rounded-0 btn-save' type='button' data-toggle='tooltip' data-placement='top' title='Save'><i class='glyphicon glyphicon-save'></i></button>");
 	$(".btn-save").bind("click", Save);
 };
@@ -62,7 +72,7 @@ function Delete(){
     }).done(function(response) {
 		par.remove();
 	}).fail(function() {
-		alert('problem with the server');
+		alert('problem with the server...');
 	})
 }; 
 

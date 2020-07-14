@@ -221,23 +221,28 @@ def search():
 @bp.route('/<int:id>/_add_injury', methods=['POST'])
 @login_required
 @permission_required(Permission.CREATE)
-def add_injuries(id):
+def add_injury(id):
     info = Information(user_id=current_user.id, athlete_id=id, type_id=1)
     db.session.add(info)
     db.session.commit()
     return jsonify({'id': info.id,
-                    'timestamp': info.timestamp,
+                    'timestamp': info.timestamp.strftime("%Y-%m-%d"),
                     'author_first_name': info.author.first_name,
                     'author_last_name': info.author.last_name})
 
-# @bp.route('/<int:id>/_update_injury', methods=['GET', 'POST'])
-# @login_required
-# @permission_required(Permission.EDIT)
+@bp.route('/<int:id>/_update_injury', methods=['POST'])
+@login_required
+@permission_required(Permission.EDIT)
+def update_injury(id):
+    info = Information.query.filter_by(id=request.form['info_id']).first_or_404()
+    info.body = request.form['info_body']
+    db.session.commit()
+    return jsonify({})
 
 @bp.route('/<int:id>/_delete_injury', methods=['POST'])
 @login_required
 @permission_required(Permission.DELETE)
-def delete_injuries(id):
+def delete_injury(id):
     Information.query.filter_by(id=request.form['info_id']).delete()
     db.session.commit()
     return jsonify({})

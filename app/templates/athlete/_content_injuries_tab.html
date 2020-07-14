@@ -1,6 +1,6 @@
-<button type="button" class="btn btn-primary btn-lg btn-block" id="btn-add">Add a comment</button>
+<button type="button" class="btn btn-primary btn-lg btn-block" id="btn-add">Add notes</button>
 <table class="table table-hover" id="tblInjuriesData">
-		{% for information in athlete.informations %}
+		{% for information in athlete.informations|reverse %}
 		  {% include "athlete/_information.html" %}  
 		{% endfor %}
 </table>

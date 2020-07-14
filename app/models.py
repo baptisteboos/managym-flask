@@ -7,6 +7,7 @@ from datetime import datetime
 import jwt
 from flask import current_app
 from flask_login import UserMixin
+from sqlalchemy.orm import backref
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db, login
@@ -243,7 +244,7 @@ class Athlete(db.Model):
     # target_results return a query with lazy='dynamic', can apply additional SQL filters
     # /!\ the reverse 'TargetResults.athlete' return an object Athlete
     target_results = db.relationship('TargetResults', backref='athlete', lazy='dynamic')
-    informations = db.relationship('Information', backref='athlete', lazy='dynamic')
+    informations = db.relationship('Information', backref='athlete' ,lazy='dynamic')
     events = db.relationship('AthleteEvent', backref='athlete', lazy='dynamic')
 
     def __repr__(self):

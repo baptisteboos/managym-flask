@@ -1,12 +1,12 @@
 <tr data-info-id="{{ information.id }}">
 	<td class="col-sm-10">
-		<div>
+		<p>
 			<b>{{ information.author.first_name }} {{ information.author.last_name }}
 				- {{ moment(information.timestamp).format('LL') }}:</b>
-		</div>
 		<p>
+		<div>
 	  	{{ information.body }}
-		</p>
+		<div>
 	</td>
 	<td class="col-sm-1">
 	    <!-- Call to action buttons -->
